@@ -17,6 +17,8 @@ import Message from '../views/user/Message.vue'
 import Player from '../views/user/Player.vue'
 import Friends from '../views/user/Friends.vue'
 import Photo from '../views/user/Photo.vue'
+import Resources from '../views/user/Resources.vue'
+import About from '../views/user/About.vue'
 
 Vue.use(VueRouter)
 
@@ -41,12 +43,6 @@ const routes = [{
   component: HelloWorld
 },
 {
-  path: '/1',
-  name: 'index',
-  component: Index
-},
-
-{
   path: '/login',
   name: 'login',
   component: Login
@@ -55,45 +51,6 @@ const routes = [{
   path: '/index',
   name: 'index',
   component: Index,
-  children: [{
-    path: 'info',
-    component: () =>
-      import('../views/user/Info.vue')
-  },
-  {
-    path: 'bookshelf',
-    component: () =>
-      import('../views/user/Bookshelf.vue')
-  },
-  {
-    path: 'history',
-    component: () =>
-      import('../views/user/History.vue')
-  },
-  {
-    path: 'library',
-    component: () =>
-      import('../views/user/Library2.vue')
-  },
-  {
-    path: 'notice',
-    component: () =>
-      import('../views/user/Notice.vue')
-  },
-
-  {
-    path: '',
-    component: () =>
-      import('../views/user/Library2.vue'),
-    default: true
-  },
-  {
-    path: 'library2',
-    component: () =>
-      import('../views/user/Library2.vue'),
-    default: true
-  }
-  ]
 },
 {
   path: '/category',
@@ -136,6 +93,16 @@ const routes = [{
   component: Photo
 },
 {
+  path: '/resources',
+  name: 'resources',
+  component: Resources
+},
+{
+  path: '/about',
+  name: 'about',
+  component: About
+},
+{
   path: '/home',
   name: 'home',
   component: Home
@@ -145,11 +112,6 @@ const routes = [{
   name: '404',
   component: NoFind
 },
-{
-  path: '/',
-  name: 'login',
-  component: Login
-}
   // { path: '*', redirect: '/login' }
 ]
 const router = new VueRouter({
@@ -161,16 +123,16 @@ const router = new VueRouter({
 })
 
 // 挂载路由导航守卫，如果用户未登陆，则跳转到登录页面
-router.beforeEach((to, form, next) => {
-  if (to.path === '/login') {
-    return next()
-  }
-  const user = window.sessionStorage.getItem('user')
-  console.log('tooken', user)
-  if (!user) {
-    return next('/login')
-  } else {
-    return next()
-  }
-})
+// router.beforeEach((to, form, next) => {
+//   if (to.path === '/login') {
+//     return next()
+//   }
+//   const user = window.sessionStorage.getItem('user')
+//   console.log('tooken', user)
+//   if (!user) {
+//     return next('/login')
+//   } else {
+//     return next()
+//   }
+// })
 export default router

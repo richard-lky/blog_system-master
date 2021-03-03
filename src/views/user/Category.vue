@@ -1,10 +1,8 @@
 <template>
     <div id="backgroundImg">
-        <el-row>
-            <el-col>
+            <div>
                 <nav-bar></nav-bar>
-            </el-col>
-            <el-col>
+            </div>
                 <div class="m_opacity m_title">
                     <div class="m_tag">
                         <div class="m_tag_item">
@@ -19,8 +17,6 @@
                         </div>
                     </div>
                 </div>
-            </el-col>
-            <el-col>
                 <div class="m_new">
                 <div class="m_new_list">
                 <div class="m_new_item">
@@ -86,8 +82,6 @@
                 </div>
                 </div>
                 </div>
-            </el-col>
-            <el-col>
         <div class="m_page">
           <el-pagination
             background
@@ -95,8 +89,6 @@
             :total="1000">
           </el-pagination>
         </div>
-      </el-col>
-        </el-row>
     </div>
 </template>
 <script>
@@ -147,7 +139,7 @@ export default {
     cursor: pointer;
 }
 .m_tag_name {
-    padding: 11px 21px;
+    padding: 7.6px 21px;
     border: 1px solid #00B5AD;
     border-right: none;
     border-radius: 5px 0 0 5px;
@@ -163,7 +155,7 @@ export default {
     color: #00B5AD;
     position: relative;
     left: -2px;
-    padding:5px 14px;
+    padding:2px 14px;
     border: #00B5AD solid 1px;
     border-radius: 0 5px 5px 0;
 }
@@ -173,7 +165,7 @@ export default {
     width: 0px;
     height: 0px;
     position: absolute;
-    top: 11px;;
+    top: 8px;;
     left: -16px;
     padding:0;
     border-right: 8px solid #FFFFFF;
@@ -189,7 +181,7 @@ export default {
     width: 0px;
     height: 0px;
     position: absolute;
-    top: 10px;;
+    top: 7px;;
     left: -18px;
     padding:0;
     border-right: 9px solid #00B5AD;
@@ -209,7 +201,7 @@ export default {
   text-decoration: none;
 }
 .m_new {
-  width: 90%;
+  width: 92%;
   margin: 0 auto;
   padding: 0 21px;
   background-color: #fff;

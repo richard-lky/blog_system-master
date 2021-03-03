@@ -1,5 +1,8 @@
 <template>
     <div id="Message" class="m-message-contain">
+        <div>
+            <nav-bar></nav-bar>
+        </div>
         <div class="message-content">
             <div class="message-new">
                 <el-input
@@ -84,6 +87,21 @@
         </div>
     </div>
 </template>
+
+<script>
+import NavBar from '../../components/NavBar.vue'
+export default {
+    name: "Friends",
+    components: {
+        NavBar,
+    },
+    data() {
+    return {
+      textarea: ''
+    }
+  }
+}
+</script>
 
 <style scoped>
 #Message {

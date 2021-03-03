@@ -1,5 +1,8 @@
 <template>
     <div>
+        <div>
+            <nav-bar></nav-bar>
+        </div>
         <transition name="dis_list">
             <div class="list_box" v-if="listIsDis">
                 <transition name="music_alert">
@@ -128,6 +131,8 @@
     
 </template>
 <script>
+import NavBar from '../../components/NavBar.vue'
+
 import { getWords,getMusicInfo,getMusicUrl,getHotMusic,getSearchSuggest,getHotTalk } from '../../assets/js/music'
 import pan from '../../assets/img/pan.png'
 import play from '../../assets/img/play.png'
@@ -142,6 +147,9 @@ import talkicon2 from '../../assets/img/talkicon2.png'
 import $ from 'jquery'
 export default {
     name:'Player',
+    components: {
+        NavBar,
+    },
     data() {
         return {
             o:0,
@@ -222,7 +230,7 @@ export default {
         }
     },
     methods: {
-        lert(val){
+        MusicAlert(val){
             this.musicAlertState=true;
             this.musicAlertVal=val;
             clearTimeout(this.musicAlertTimer);
