@@ -1,87 +1,82 @@
 <template>
-  <div id="index">
-    <el-row>
-      <el-col>
+  <div id="index" class="top">
+      <el-backtop target=".top" :bottom="200"></el-backtop>
         <nav-bar></nav-bar>
-      </el-col>
-      <el-col :xs="20" :sm="20" class="m-opacity m-title">
-        <i class="el-icon-star-on m-icon"></i>
-        正文</el-col>
-      <el-col class="m-recommend">
-        <div class="m-recommend-item">
+        <div class="headline">首页</div>
+      <div class="container">
+        <Aside></Aside>
+        <div class="index_container">
+          <!-- <div :xs="20" :sm="20" class="m-opacity m-title">
+            <i class="el-icon-star-on m-icon"></i>
+            正文</div> -->
+          <div class="m-recommend">
+            <div class="m-recommend-item">
+                  <a href="#" class="m-recommend-a">
+                  <img src="../../assets/img/bg_index.jpg" alt="" class="m-img">
+                  <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
+                </a>
+            </div>
+            <div class="m-recommend-item">
               <a href="#" class="m-recommend-a">
-              <img src="../../assets/img/bg_index.jpg" alt="" class="m-img">
-              <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
-            </a>
-          </div>
-          <div class="m-recommend-item">
-            <a href="#" class="m-recommend-a">
-              <img src="../../assets/logo.png" alt="" class="m-img">
-              <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
-            </a>
-          </div>
-          <div class="m-recommend-item">
-            <a href="#" class="m-recommend-a">
-              <img src="../../assets/img/bg_404.jpg" alt="" class="m-img">
-              <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
-            </a>
-          </div>
-        <div class="m-recommend-item">
-            <a href="#" class="m-recommend-a">
-              <img src="../../assets/img/bg_404.jpg" alt="" class="m-img">
-              <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
-            </a>
-          </div>
-      </el-col>
-      <div class="m-new-blogs">
-        <el-col :xs="20" :sm="20" class="m-opacity m-title">
-        <i class="el-icon-s-flag m-icon"></i>
-        最新博文</el-col>
-      <el-col>
-        <div class="m-new-list">
-          <div class="m-new-item">
-            <div class="m-new-info">
-              <h1 class="m-new-title"><a class="m-recommend-a" href="#">标题</a> </h1>
-              <p class="m-new-text">正文正文正文正文正文正文正文正文正正文正文
-                正文正文正文正文正文正文正文正文正文正文正文正文正文
-                正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文
-                正文正文正文正文正文正文正文正文正文正文
-                正文正文正文正文正文
-                正文正文正文正文
-                正文正文
-                正文
-              </p>
-              <div class="m-publish-info">
-                  <div class="m-publish-avarter">
-                  <img src="../../assets/logo.png" alt="">
-                  <div class="m-avarter-name"><a class="m-recommend-a" href="#">作者</a></div>
-                </div>
-                <div class="m-publish-time"><i class="el-icon-star-on m-icon"></i>2021</div>
-                <span class="m-publish-time"><i class="el-icon-view
- m-icon"></i>222</span>
-                <span class="m-publish-time"><i class="el-icon-chat-dot-round
- m-icon"></i>111</span>
+                <img src="../../assets/logo.png" alt="" class="m-img">
+                <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
+              </a>
+            </div>
+            <div class="m-recommend-item">
+              <a href="#" class="m-recommend-a">
+                <img src="../../assets/img/bg_404.jpg" alt="" class="m-img">
+                <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
+              </a>
+            </div>
+            <div class="m-recommend-item">
+                <a href="#" class="m-recommend-a">
+                  <img src="../../assets/img/bg_404.jpg" alt="" class="m-img">
+                  <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
+                </a>
               </div>
-              <div class="m-new-category"><a href="#" class="m-category-a">分类分类分类</a></div>
+          </div>
+          <div class="m-new-blogs">
+            <div :xs="20" :sm="20" class="m-opacity m-title">
+            <i class="el-icon-s-flag m-icon"></i>
+            最新博文</div>
+            <div class="m-new-list">
+              <div class="m-new-item"  v-for="item in articleData" :key="item.id">
+                <div class="m-new-info">
+                  <h1 class="m-new-title" @click="handleClick(item.articleId)"><a class="m-recommend_title-a" href="#">{{item.articleTitle}}</a> </h1>
+                  <p class="m-new-text">
+                    {{item.articleSummary}}
+                  </p>
+                  <div class="m-publish-info">
+                      <div class="m-publish-avarter">
+                      <img :src="$baseImgUrl + item.aboutImg" alt="">
+                      <div class="m-avarter-name"><a class="m-recommend_title-a" href="#">{{item.aboutName}}</a></div>
+                    </div>
+                    <div class="m-publish-time"><i class="el-icon-date m-icon"></i>{{item.createTime}}</div>
+                    <span class="m-publish-time"><i class="el-icon-view
+    m-icon"></i>{{item.views}}</span>
+                    <span class="m-publish-time"><i class="el-icon-chat-dot-round
+    m-icon"></i>{{item.commentCount}}</span>
+                  </div>
+                  <div class="m-new-category"><a href="#" class="m-category-a">{{item.categoryName}}</a></div>
+                  <div class="tags"><el-tag type="success">{{item.tagsName}}</el-tag></div>
+                </div>
+                <div class="m-new-img" @click="handleClick(item.articleId)">
+                  <img :src="$baseImgUrl + item.picture" alt="">
+                </div>
+              </div>
+              <hr>
+              <div class="m-page">
+              <el-pagination
+                background
+                layout="prev, pager, next"
+                :total="total">
+              </el-pagination>
             </div>
-            <div class="m-new-img">
-              <img src="../../assets/logo.png" alt="">
             </div>
+            
           </div>
         </div>
-      </el-col>
-      <el-col>
-        <div class="m-page">
-          <el-pagination
-            background
-            layout="prev, pager, next"
-            :total="1000">
-          </el-pagination>
-        </div>
-      </el-col>
       </div>
-      
-    </el-row>
     <!-- <el-row>        
       <el-col :xs="10" :sm="6" :md="4" :lg="3" class="nav">导航栏
         <nav-bar></nav-bar>
@@ -95,16 +90,74 @@
 
 <script>
 import NavBar from '../../components/NavBar.vue'
+import Aside from '../../components/Aside.vue'
+import {
+  SearchArticle,
+} from "../../network/article";
 export default {
   name: 'Index',
   components: {
-    NavBar
+    NavBar,
+    Aside
+  },
+  data() {
+    return {
+      articleData: [], // 文章列表
+      currentPage: 1,
+      pageSize: 5,
+      total: 8,
+    }
   },
   created() {
     let user = JSON.parse(sessionStorage.getItem("user"));
     console.log("sessionStorage", sessionStorage.getItem("user"));
     console.log(user && user.userName, user && user.userId);
+
+    // this.$axios.get("/article").then(res => {
+    //   console.log(res+"----");
+    //     if (res) {
+    //     // for (let i = 0; i < res.data.length; i++) {
+    //     //   res.data[i].isreturn = 1
+    //     // }
+    //     this.articleData = res.data;
+    //     this.total = res.total;
+    //   } else {
+    //     this.articleData = [];
+    //     this.total = 0;
+    //   }
+    // })
+
+    SearchArticle(this.currentPage, this.pageSize).then((res) => {
+      // TODO
+      // this.articleData = res
+      // this.total = res.total
+      console.log(res.data+"----");
+      if (res) {
+        // for (let i = 0; i < res.data.length; i++) {
+        //   res.data[i].isreturn = 1
+        // }
+        this.articleData = res.data;
+        this.total = res.total;
+      } else {
+        this.articleData = [];
+        this.total = 0;
+      }
+    });
+
   },
+  methods: {
+    handleClick(articleId){
+      console.log("点击的文章"+articleId);
+      // this.$router.push("/details/"+articleId);
+      // this.$router.push("/details/");
+      this.$router.push({
+        name: "details",
+        params: {
+          articleId: articleId,
+        },
+      });
+    }
+  }
 };
 </script>
 
@@ -113,11 +166,32 @@ export default {
   color: black;
   width: 100%;
   height: 100%;
-  background-image: url(../../assets/img/bg_lake.jpg);
+  background-image: url(../../assets/img/sky.jpg);
   background-size: cover;
   background-position: center;
-  /* position: relative; */
+  position: relative;
   overflow: auto;
+  vertical-align: top;
+}
+.headline {
+   width: 100%;
+   height: 300px;
+   font-size: 40px;
+   line-height: 300px;
+   text-align: center;
+   vertical-align: middle;
+   font-family: arzhu;
+   color: #fff;
+   font-weight: bold;
+}
+.container {
+  width: 92%;
+  margin: 0px auto 0;
+  vertical-align: top;
+}
+.index_container {
+  width: 75%;
+  display: inline-block;
 }
 .content {
   /* position: absolute; */
@@ -139,8 +213,6 @@ export default {
   font-size: 16px;
   line-height: 30px;
   color: rgba(0,0,0,.6);
-  margin: 0 8%;
-  margin-top: 274px;
   background: #fff;
   padding: 10px 30px;
   border-radius: 5px;
@@ -151,15 +223,25 @@ export default {
   font-size: 16px;
 }
 .m-recommend{
-  margin-top: 30px;
   width: 100%;
 }
 .m-recommend-a {
+  height: 13vw;
   width: 100%;
   display: block;
   color: #333;
   overflow: hidden;
   position: relative;
+  border-radius: 3px;
+  text-decoration: none;
+}
+.m-recommend_title-a {
+  width: 100%;
+  display: block;
+  color: #333;
+  overflow: hidden;
+  position: relative;
+  border-radius: 3px;
   text-decoration: none;
 }
 .m-img {
@@ -169,31 +251,36 @@ export default {
   object-fit: cover;
   opacity: 0.9;
   overflow: hidden;
+  transition: all .6s;
 }
-
+.m-img:hover {
+  transform: scale(1.1);
+}
 .m-recommend-item {
-  width: 22% !important;
+  width: 25% !important;
   display: inline-block;
-  padding: 20px 7px;
+  padding: 0 7px 20px ;
   position: relative;
 }
 .m-img-title {
   position: absolute;
   left: 0px;
-  bottom: 4px;
+  bottom: 0px;
   width: 100%;
   font-size: 18px;
   text-align: left;
   color: #ffffff;
-  background-color: rgba(0, 0, 0, .60);
+  background-color: rgba(0, 0, 0, 0.2);
   line-height: 40px;
   height: 40px;
   border-radius: 0 0 3px 3px;
-  opacity: 0.8;
+  opacity: 0.9;
+}
+.m-new-item {
+  margin-bottom: 40px;
 }
 .m-new-list {
-  width: 90%;
-  margin: 14px auto;
+  margin: 14px auto 30px;
   padding:28px 21px;
   background-color: #fff;
   text-align: left;
@@ -262,6 +349,17 @@ export default {
   vertical-align: middle;
 
 }
+.tags {
+  float: right;
+  position: relative;
+  bottom: -45px;
+  margin-right: 5px;
+}
+.tags span {
+  padding: 0 5px;
+  height: 27px;
+  line-height: 27px;
+}
 .m-new-category {
   float: right;
   border-radius: 5px;
@@ -285,30 +383,36 @@ export default {
   position: relative;
   vertical-align: top;
   margin-top: 14px;
+  border-radius: 5px;
   margin-left: 10px;
+  overflow: hidden;
 }
 .m-new-img img {
   width: 100%;
   height: 13vw;
   vertical-align: bottom;
   border-radius: 5px;
+  transition:  all .6s;
+}
+.m-new-img img:hover {
+  transform: scale(1.1);
 }
 .m-page {
   background: #fff;
   border-radius: 5px;
-  width: 90%;
-  margin: 0px auto 100px;
+  text-align: center;
+  margin: 30px auto 30px;
   padding: 10px;
   opacity: 0.9;
 }
 
 
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
   background-color: #f5f5f5;
-}
+} */
 
 /*定义滚动条轨道 内阴影+圆角
 ::-webkit-scrollbar-track
@@ -319,9 +423,9 @@ export default {
 }*/
 
 /*定义滑块 内阴影+圆角*/
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
   border-radius: 3px;
   -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
   background-color: #555;
-}
+} */
 </style>

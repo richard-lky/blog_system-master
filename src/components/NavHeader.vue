@@ -9,7 +9,7 @@
           }"
         ></li>
       </div>
-      <div class="logo">图书管理系统</div>
+      <div id="logo" class="logo">博客管理系统</div>
       <div class="header-right">
         <div class="header-user-con">
           <div class="user-avator">
@@ -58,6 +58,7 @@ export default {
       this.collapse = !this.collapse;
       this.$eventBus.$emit("eventBusName", this.collapse);
     },
+    
   },
 };
 </script>

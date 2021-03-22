@@ -1,61 +1,99 @@
 <template>
-    <div id="Details">
+    <div id="Details" class="top">
+        <el-backtop target=".top" :bottom="200"></el-backtop>
         <el-row>
             <el-col><nav-bar></nav-bar></el-col>
         </el-row>
+        <div class="headline">文章详情</div>
         <div class="m-details-contain">
+            <Aside></Aside>
             <!-- 文章详情 -->
-            <div class="m-contain-content"><article v-html="value" ></article></div>
-            <!-- end -->
-            <div class="m-end">
-                <el-divider><div class="m-end-text">END</div></el-divider>
-            </div>
-            <!-- 评论区 -->
-            <div class="m-comment">
-                <!-- 评论列表 -->
-                <div class="m-comment-list">
-                    <div>
-                        <h3 class="comment-list-title">评论</h3>
-                        <div class="comment">
-                            <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
-                            <div class="content">
-                                <a href="#" class="author"><span>author</span></a>
-                                <div class="metadata"><span>2021-01-23:59</span></div>
-                                <div class="text">内容</div>
-                                <div class="actions">
-                                    <a href="#" class="reply">回复</a>
-                                </div>
-                            </div>
-                            <!-- 子集评论 -->
-                            <div class="comment-child">
-                                <div class="comment">
-                                    <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
+            <div class="m-details">
+                <div  class="m-contain-content">
+                    <article v-html="value" ></article>
+                    <!-- end -->
+                    <div class="m-end">
+                        <el-divider><div class="m-end-text">END</div></el-divider>
+                    </div>
+                </div>
+                <div>
+                    <!-- 评论区 -->
+                    <div class="m-comment">
+                        <!-- 评论列表 -->
+                        <div class="m-comment-list">
+                            <div>
+                                <h3 class="comment-list-title">评论</h3>
+                                <div class="comment" v-for="item in articleData" :key="item.id">
+                                    <a href="#" class="avatar"><img :src="$baseImgUrl + item.commentImg" alt=""></a>
                                     <div class="content">
-                                        <a href="#" class="author">
-                                            <span>author</span></a>
-                                        <div class="author-tag">栈主</div>
-                                        <span class="mteal">@ author</span>
-                                        
-                                        <div class="metadata"><span>2021-01-23:59</span></div>
-                                        <div class="text">内容</div>
+                                        <a href="#" class="author"><span>{{item.commentName}}</span></a>
+                                        <div class="metadata"><span>{{item.commentTime}}</span></div>
+                                        <div class="text">{{item.commentContent}}</div>
                                         <div class="actions">
-                                            <a href="#" class="reply">回复</a>
+                                            <a href="#" class="reply" @click="reply(item.commentName)">回复</a>
+                                        </div>
+                                    </div>
+                                    <!-- 子集评论 -->
+                                    <div class="comment-child">
+                                        <div class="comment">
+                                            <a href="#" class="avatar"><img :src="$baseImgUrl + item.replyImg" alt=""></a>
+                                            <div class="content">
+                                                <a href="#" class="author">
+                                                    <span>{{item.replyName}}</span></a>
+                                                <div class="author-tag" v-if="item.innkeeper == 1">栈主</div>
+                                                <div class="author-tag" v-if="item.innkeeper == 0">游客</div>
+                                                <span class="mteal">@ {{item.commentName}}</span>
+                                                
+                                                <div class="metadata"><span>{{item.replyTime}}</span></div>
+                                                <div class="text">{{item.replyContent}}</div>
+                                                <div class="actions">
+                                                    <a href="#" class="reply"  @click="reply(item.replyName)">回复</a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="m-comment-reply">
-                    <div class="comment-form">
-                        <el-input
-                            type="textarea"
-                            :rows="7"
-                            placeholder="请输入评论信息..."
-                            v-model="textarea">
+                        <div class="m-comment-reply">
+                            <div class="comment-form">
+                                <el-input
+                                class="info_input"
+                                placeholder="请输入昵称"
+                                prefix-icon="el-icon-user"
+                                v-model="input_info">
                             </el-input>
-                            <el-button class="m-submit-buttom" ><i class="el-icon-edit"></i>发表</el-button>
+                            <div class="space"></div>
+                            <el-input
+                                class="info_input"
+                                placeholder="请输入邮箱，不做展示用"
+                                prefix-icon="el-icon-message"
+                                v-model="input_info">
+                            </el-input>
+                            <div class="space"></div>
+                            <el-input
+                                class="info_input"
+                                placeholder="请输入头像地址，非必填"
+                                prefix-icon="el-icon-message"
+                                v-model="input_info">
+                            </el-input>
+                            <div class="space"></div>
+                            <el-input
+                                class="info_input"
+                                placeholder="请输入个人网站地址，非必填"
+                                prefix-icon="el-icon-paperclip"
+                                v-model="input_info">
+                            </el-input>
+                            <el-input
+                                id="textarea"
+                                type="textarea"
+                                :rows="7"
+                                :placeholder="placeholder"
+                                v-model="textarea">
+                            </el-input>
+                                <el-button class="m-submit-buttom" ><i class="el-icon-edit"></i>发表</el-button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,10 +102,17 @@
 </template>
 
 <script>
+import Aside from '../../components/Aside.vue'
 import NavBar from '../../components/NavBar.vue'
+import $ from 'jquery'
+// import {
+//   SelectArticleById,
+// } from "../../network/article";
+
 export default {
     name: "Details",
     components: {
+        Aside,
         NavBar
     },
     data() {
@@ -78,7 +123,54 @@ export default {
 									<p><code>java</code></p>`,
             defaultData: "preview",
             textarea: '',
+            input_info: '',
+            placeholder: "请输入评论信息...",
+            articleId: "",
+            articleData: [], // 文章列表
+            currentPage: 1,
+            pageSize: 5,
+            total: 8,
         };
+    },
+    created() {
+        const that = this;
+        let articleId = parseInt(this.$route.params.articleId);
+        this.articleId = articleId;
+        // SelectArticleById(this.articleId,this.currentPage,this.pageSize).then((res=>{
+        //     console.log(articleId+"+++++"+res.data);
+        //     if (res) {
+        //         // for (let i = 0; i < res.data.length; i++) {
+        //         //   res.data[i].isreturn = 1
+        //         // }
+        //         this.articleData = res.data;
+        //         this.total = res.total;
+        //     } else {
+        //         this.articleData = [];
+        //         this.total = 0;
+        //     }
+        // }));
+
+         this.$axios.get('/comment/showById', {
+            params: {
+            articleId: articleId,
+            page: this.currentPage,
+            rows: this.pageSize
+            }
+        })
+        .then(function (response) {
+            console.log(response.data.data);
+            that.articleData = response.data.data;
+            that.total = response.data.total;
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    },
+    methods: {
+         reply(name) {
+            $("textarea").focus();
+            this.placeholder = "@"+name;
+        }
     },
     computed: {
         
@@ -90,16 +182,27 @@ export default {
   color: black;
   width: 100%;
   height: 100%;
-  background-image: url(../../assets/img/bg_lake.jpg);
+  background-image: url(../../assets/img/sky.jpg);
   background-size: cover;
   background-position: center;
   /* position: relative; */
   overflow: auto;
 }
-.m-details-contain {
-  width: 90%;
-  margin: 100px auto;
-  padding:28px 21px;
+.headline {
+   width: 100%;
+   height: 300px;
+   font-size: 40px;
+   line-height: 300px;
+   text-align: center;
+   vertical-align: middle;
+   font-family: arzhu;
+   color: #fff;
+   font-weight: bold;
+}
+.m-details {
+    width: 75%;
+    display: inline-block;
+    /* padding:28px 21px; */
   background-color: #fff;
   text-align: left;
   border-radius: 5px;
@@ -108,14 +211,20 @@ export default {
   -webkit-box-shadow: #000000 0px 0px 10px;
   opacity: 0.9;
 }
+.m-details-contain {
+  width: 92%;
+  margin: 0px auto;
+  vertical-align: top;
+}
 .m-contain-content {
     padding: 28px 56px;
 }
 .m-end {
+    display: inline-block;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 0px;
+  margin: 30px 0px;
 }
 .m-end-text {
     margin: 0 10px;
@@ -133,6 +242,15 @@ export default {
 .m-comment {
     padding: 14px;
     margin: 56px 0;
+}
+.info_input {
+    width: 23%;
+    margin: 1.5% 0;
+    display: inline-block;
+}
+.space {
+    width: 2.6%;
+    display: inline-block;
 }
 .m-comment-list {
     border: 1px solid rgba(34,36,38,.15);

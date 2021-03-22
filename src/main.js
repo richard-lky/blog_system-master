@@ -15,6 +15,19 @@ import 'mavon-editor/dist/css/index.css'
 //引用js文件
 // import'./assets/js/jquery.min.js'
 
+// 引入echarts
+import * as echarts from 'echarts'
+
+//axios
+import axios from 'axios'
+
+Vue.prototype.$axios = axios
+// axios.defaults.baseURL = '/api'  //关键代码
+// Vue.config.productionTip = false
+
+Vue.prototype.$echarts = echarts
+
+
 //引入mavon-editor插件
 Vue.use(mavonEditor)
 
@@ -27,16 +40,15 @@ Vue.prototype.$eventBusiIcon = new Vue()
 Vue.prototype.$moment = moment
 Vue.config.productionTip = false
 
-Vue.prototype.$baseImgUrl = 'http://127.0.0.1:3000'
+Vue.prototype.$baseImgUrl = 'http://browser9.qhimg.com/bdm/768_474_0/'
 // Vue.prototype.$activeIndex = 'D:/图片/'
-
 
 Vue.prototype.$user = Object.assign({
     id: '',
     userId: '',
     userName: '',
     userAge: '',
-    userPassword: 'aA@000000',
+    userPassword: '',
     userEmail: '',
     userSex: '',
     userPhone: '',
@@ -51,7 +63,7 @@ new Vue({
 
 // 配置代理，解决跨域
 Vue.prototype.HOST = {
-    target: 'http://127.0.0.1:3000',
+    target: 'http://localhost:8081',
     changeOrigin: true,
     pathRewrite: {
         '^/api': ''

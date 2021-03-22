@@ -19,27 +19,6 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="出版社">
-            <el-select v-model="formSeletor.pub" placeholder="出版社">
-              <el-option label="所有" value="所有"></el-option>
-              <el-option
-                :label="item"
-                :value="item"
-                v-for="item in bookPubs"
-                :key="item"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <!-- <el-form-item label="剩余情况">
-        <el-input v-model="formSeletor.user" placeholder="审批人"></el-input>
-      </el-form-item> -->
-          <!-- <el-form-item label="状态">
-        <el-select v-model="formSeletor.status" placeholder="剩余情况" width="50px">
-          <el-option label="所有" value="所有"></el-option>
-          <el-option label="借完" value="0"></el-option>
-          <el-option label="可借" value="1"></el-option>
-        </el-select>
-      </el-form-item> -->
           <el-form-item>
             <el-button type="primary" @click="onSubmitSeletor">查询</el-button>
           </el-form-item>
@@ -55,7 +34,7 @@
           <el-form-item>
             <el-input
               v-model="form.bookName"
-              placeholder="输入书名，宁少字，不多字"
+              placeholder="输入标题，宁少字，不多字"
             ></el-input>
           </el-form-item>
           <el-form-item>
@@ -65,7 +44,7 @@
               class="publish"
               size="small"
               @click="dialogNewBookVisible = true"
-              >添加新书籍</el-button
+              >写文章</el-button
             >
           </el-form-item>
         </el-form>
@@ -74,38 +53,34 @@
         <el-table
           ref="filterTable"
           :data="tableData"
-          style="width: 100%; min-height: 300px"
+          style="width: 100%; min-height: 300px;"
         >
           <el-table-column
             prop="bookName"
             :show-overflow-tooltip="true"
-            label="书名"
+            label="文章标题"
             fixed
           >
           </el-table-column>
           <el-table-column
-            prop="bookPub"
-            :show-overflow-tooltip="true"
-            label="出版社"
-          >
-          </el-table-column>
-          <el-table-column prop="bookSort" label="类别"> </el-table-column>
-          <el-table-column
             prop="bookRecord"
-            label="上架日期"
+            label="创作日期"
             sortable
-            width="150"
             column-key="date"
           >
           </el-table-column>
-          <el-table-column
-            prop="bookAuthor"
-            :show-overflow-tooltip="true"
-            label="作者"
-          >
-          </el-table-column>
+          <el-table-column prop="bookSort" label="文章分类"> </el-table-column>
+          <el-table-column prop="bookSort" label="标签分类"> </el-table-column>
+          <el-table-column prop="bookSort" label="是否发布"> </el-table-column>
+          <el-table-column prop="bookSort" label="发布/撤销"> </el-table-column>
           <el-table-column prop="tag" label="操作" width="160">
             <template slot-scope="scope">
+              <el-tag
+                @click="handleClick(scope.row)"
+                type="primary"
+                disable-transitions
+                class="tag-btn"
+                >查看</el-tag>
               <el-tag
                 @click="handleClick(scope.row)"
                 type="primary"
@@ -298,7 +273,7 @@ import {
   uploadImg,
 } from "../../network/book";
 export default {
-  name: "Books",
+  name: "Article",
   components: {},
   data() {
     return {
@@ -575,7 +550,6 @@ export default {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 100%;
   padding: 5px 10px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -594,8 +568,13 @@ export default {
   border: 1px solid #ddd;
   border-radius: 5px;
 }
+.screen {
+  display: inline-block;
+}
 .container .content-box .content .search {
-  padding-left: 167px;
+  padding-left: 10px;
+  display: inline-block;
+
 }
 .container .content-box .content .search .publish {
   margin-left: 50px;
@@ -619,6 +598,10 @@ export default {
   border: 1px solid #ddd;
   position: absolute;
 }
+
+
+
+
 .add-book-img {
   display: inline-block;
   width: 26%;
@@ -653,6 +636,7 @@ export default {
   height: 100%;
   object-fit: cover;
 }
+
 .book-img img {
   width: 100%;
   height: 100%;
@@ -681,5 +665,8 @@ export default {
   width: 178px;
   height: 178px;
   display: block;
+}
+.page {
+  text-align: center;
 }
 </style>

@@ -1,102 +1,115 @@
 <template>
-    <div id="backgroundImg">
-            <div>
-                <nav-bar></nav-bar>
-            </div>
-                <div class="m_opacity m_title">
-                    <div class="m_tag">
-                        <div class="m_tag_item">
-                            <a href="#" class="m_tag_name">数据表GV</a>
-                            <div class="m_tag_number">4</div>
-                        </div>
-                    </div>
-                    <div class="m_tag">
-                        <div class="m_tag_item">
-                            <a href="#" class="m_tag_name">数据表GV</a>
-                            <div class="m_tag_number">4</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="m_new">
-                <div class="m_new_list">
-                <div class="m_new_item">
-                    <div class="m_new_info">
-                    <h1 class="m_new_title"><a class="m_recommend_a" href="#">标题</a> </h1>
-                    <p class="m_new_text">正文正文正文正文正文正文正文正文正正文正文
-                        正文正文正文正文正文正文正文正文正文正文正文正文正文
-                        正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文
-                        正文正文正文正文正文正文正文正文正文正文
-                        正文正文正文正文正文
-                        正文正文正文正文
-                        正文正文
-                        正文
-                        
-                    </p>
-                    <div class="m_publish_info">
-                        <div class="m_publish_avarter">
-                        <img src="../../assets/logo.png" alt="">
-                        <div class="m_avarter_name"><a class="m_recommend_a" href="#">作者</a></div>
-                        </div>
-                        <div class="m_publish_time"><i class="el_icon_star_on m_icon"></i>2021</div>
-                        <span class="m_publish_time"><i class="el_icon_view
-        m_icon"></i>222</span>
-                        <span class="m_publish_time"><i class="el_icon_chat_dot_round
-        m_icon"></i>111</span>
-                    </div>
-                    <div class="m_new_category"><a href="#" class="m_category_a">分类分类分类</a></div>
-                    </div>
-                    <div class="m_new_img">
-                    <img src="../../assets/logo.png" alt="">
-                    </div>
-                </div>
-                </div>
-                <div class="m_new_list">
-                <div class="m_new_item">
-                    <div class="m_new_info">
-                    <h1 class="m_new_title"><a class="m_recommend_a" href="#">标题</a> </h1>
-                    <p class="m_new_text">正文正文正文正文正文正文正文正文正正文正文
-                        正文正文正文正文正文正文正文正文正文正文正文正文正文
-                        正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文
-                        正文正文正文正文正文正文正文正文正文正文
-                        正文正文正文正文正文
-                        正文正文正文正文
-                        正文正文
-                        正文
-                    </p>
-                    <div class="m_publish_info">
-                        <div class="m_publish_avarter">
-                        <img src="../../assets/logo.png" alt="">
-                        <div class="m_avarter_name"><a class="m_recommend_a" href="#">作者</a></div>
-                        </div>
-                        <div class="m_publish_time"><i class="el_icon_star_on m_icon"></i>2021</div>
-                        <span class="m_publish_time"><i class="el_icon_view
-        m_icon"></i>222</span>
-                        <span class="m_publish_time"><i class="el_icon_chat_dot_round
-        m_icon"></i>111</span>
-                    </div>
-                    <div class="m_new_category"><a href="#" class="m_category_a">分类分类分类</a></div>
-                    </div>
-                    <div class="m_new_img">
-                    <img src="../../assets/logo.png" alt="">
-                    </div>
-                </div>
-                </div>
-                </div>
-        <div class="m_page">
-          <el-pagination
-            background
-            layout="prev, pager, next"
-            :total="1000">
-          </el-pagination>
+    <div id="backgroundImg" class="top">
+      <el-backtop target=".top" :bottom="200"></el-backtop>
+      <div>
+          <nav-bar></nav-bar>
+      </div>
+      <div class="headline">分类</div>
+      <div class="container">
+        <Aside></Aside>
+        <div class="category_container">
+          <div class="m_opacity m_title">
+              <div class="m_tag">
+                  <div class="m_tag_item">
+                      <a href="#" class="m_tag_name">数据表GV</a>
+                      <div class="m_tag_number">4</div>
+                  </div>
+              </div>
+              <div class="m_tag">
+                  <div class="m_tag_item">
+                      <a href="#" class="m_tag_name">数据表GV</a>
+                      <div class="m_tag_number">4</div>
+                  </div>
+              </div>
+          </div>
+          <div class="m_new">
+          <div class="m_new_list">
+          <div class="m_new_item">
+              <div class="m_new_info">
+              <h1 class="m_new_title"><a class="m_recommend_a" href="#">标题</a> </h1>
+              <p class="m_new_text">正文正文正文正文正文正文正文正文正正文正文
+                  正文正文正文正文正文正文正文正文正文正文正文正文正文
+                  正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文
+                  正文正文正文正文正文正文正文正文正文正文
+                  正文正文正文正文正文
+                  正文正文正文正文
+                  正文正文
+                  正文
+                  
+              </p>
+              <div class="m_publish_info">
+                  <div class="m_publish_avarter">
+                  <img src="../../assets/logo.png" alt="">
+                  <div class="m_avarter_name"><a class="m_recommend_a" href="#">作者</a></div>
+                  </div>
+                  <div class="m_publish_time"><li class="el-icon-date"></li>2021</div>
+                  <span class="m_publish_time"><i class="el-icon-view
+  "></i>222</span>
+                  <span class="m_publish_time"><i class="el-icon-chat-line-round
+  "></i>111</span>
+              </div>
+              <div class="m_new_category"><a href="#" class="m_category_a">分类分类分类</a></div>
+                  <div class="tags"><el-tag type="success">标签一</el-tag></div>
+
+              </div>
+              <div class="m_new_img">
+              <img src="../../assets/logo.png" alt="">
+              </div>
+          </div>
+          </div>
+          <div class="m_new_list">
+          <div class="m_new_item">
+              <div class="m_new_info">
+              <h1 class="m_new_title"><a class="m_recommend_a" href="#">标题</a> </h1>
+              <p class="m_new_text">正文正文正文正文正文正文正文正文正正文正文
+                  正文正文正文正文正文正文正文正文正文正文正文正文正文
+                  正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文
+                  正文正文正文正文正文正文正文正文正文正文
+                  正文正文正文正文正文
+                  正文正文正文正文
+                  正文正文
+                  正文
+              </p>
+              <div class="m_publish_info">
+                  <div class="m_publish_avarter">
+                  <img src="../../assets/logo.png" alt="">
+                  <div class="m_avarter_name"><a class="m_recommend_a" href="#">作者</a></div>
+                  </div>
+                  <div class="m_publish_time"><li class="el-icon-date"></li>2021</div>
+                  <span class="m_publish_time"><i class="el-icon-view
+  "></i>222</span>
+                  <span class="m_publish_time"><i class="el-icon-chat-line-round
+  "></i>111</span>
+              </div>
+              <div class="m_new_category"><a href="#" class="m_category_a">分类分类分类</a></div>
+                  <div class="tags"><el-tag type="success">标签一</el-tag></div>
+              </div>
+              <div class="m_new_img">
+              <img src="../../assets/logo.png" alt="">
+              </div>
+          </div>
+          </div>
+          <hr>
+          <div class="m_page">
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="1000">
+            </el-pagination>
+          </div>
+          </div>
         </div>
+      </div>
     </div>
 </template>
 <script>
+import Aside from "../../components/Aside.vue"
 import NavBar from '../../components/NavBar.vue'
 export default {
   name: 'Category',
   components: {
-    NavBar
+    NavBar,
+    Aside,
   },
 }
 </script>
@@ -105,22 +118,40 @@ export default {
   color: black;
   width: 100%;
   height: 100%;
-  background-image: url(../../assets/img/bg_lake.jpg);
+  background-image: url(../../assets/img/sky.jpg);
   background-size: cover;
   background-position: center;
   /* position: relative; */
   overflow: auto;
 }
+.headline {
+   width: 100%;
+   height: 300px;
+   font-size: 40px;
+   line-height: 300px;
+   text-align: center;
+   vertical-align: middle;
+   font-family: arzhu;
+   color: #fff;
+   font-weight: bold;
+}
+.container {
+  width: 92%;
+  margin: 0px auto 0;
+  vertical-align: top;
+}
+.category_container {
+  width: 75%;
+  display: inline-block;
+}
 .m_opacity {
   opacity: 0.9;
 }
 .m_title {
-    width: 92%;
-    margin: 5px auto 30px;
+    margin: 0px auto 30px;
     font-size: 16px;
     line-height: 30px;
     color: rgba(0,0,0,.6);
-    margin-top: 274px;
     background: #fff;
     padding: 30px 10px;
     border-radius: 5px;
@@ -201,9 +232,8 @@ export default {
   text-decoration: none;
 }
 .m_new {
-  width: 92%;
-  margin: 0 auto;
-  padding: 0 21px;
+  margin: 0 auto 30px;
+  padding: 0 21px 50px;
   background-color: #fff;
   border-radius: 5px; 
   border: 1px solid rgba(34,36,38,.15);
@@ -293,6 +323,17 @@ export default {
   font-size: 14px;
 
 }
+.tags {
+  float: right;
+  position: relative;
+  bottom: -45px;
+  margin-right: 5px;
+}
+.tags span {
+  padding: 0 5px;
+  height: 27px;
+  line-height: 27px;
+}
 .m_new_img {
   width: 25%;
   height: 100%;
@@ -301,18 +342,25 @@ export default {
   vertical-align: top;
   margin-top: 14px;
   margin-left: 10px;
+  border-radius: 5px;
+  transition: all .6s;
+  overflow: hidden;
 }
 .m_new_img img {
   width: 100%;
   height: 13vw;
   vertical-align: bottom;
   border-radius: 5px;
+  transition: all .6s;
+  overflow: hidden;
+}
+.m_new_img img:hover {
+  transform: scale(1.1);
 }
 .m_page {
   background: #fff;
-  border-radius: 5px;
-  width: 92%;
-  margin: 30px auto 100px;
+  border-radius: 0 0 5px 5px;
+  margin: 30px auto 0px;
   padding: 10px;
   opacity: 0.9;
 }

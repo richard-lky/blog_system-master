@@ -1,88 +1,113 @@
 <template>
-    <div id="Message" class="m-message-contain">
+    <div id="Message" class="m_message_contain top">
+        <el-backtop target=".top" :bottom="200"></el-backtop>
         <div>
             <nav-bar></nav-bar>
         </div>
-        <div class="message-content">
-            <div class="message-new">
-                <el-input
-                    type="textarea"
-                    :rows="7"
-                    placeholder="请输入评论信息..."
-                    v-model="textarea">
+        <div class="headline">留言板</div>
+        <div class="container">
+            <Aside></Aside>
+            <div class="message_content">
+                <div class="message_new">
+                     <el-input
+                        class="info_input"
+                        placeholder="请输入昵称"
+                        prefix-icon="el-icon-user"
+                        v-model="input_info">
                     </el-input>
-                    <el-button type="success" class="m-submit-buttom" ><i class="el-icon-edit"></i>发表</el-button>
-            </div>
-            <!-- 留言列表 -->
-            <div class="m-comment-list">
-                <div>
-                    <h3 class="comment-list-title">留言</h3>
-                    <div class="comment">
-                        <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
-                        <div class="content">
-                            <a href="#" class="author"><span>author</span></a>
-                            <div class="metadata"><span>2021-01-23:59</span></div>
-                            <div class="text">内容</div>
-                            <div class="actions">
-                                <a href="#" class="reply">回复</a>
+                    <el-input
+                        class="info_input"
+                        placeholder="请输入邮箱，不做展示用"
+                        prefix-icon="el-icon-message"
+                        v-model="input_info">
+                    </el-input>
+                    <el-input
+                        class="info_input"
+                        placeholder="请输入个人网站地址，非必填"
+                        prefix-icon="el-icon-paperclip"
+                        v-model="input_info">
+                    </el-input>
+                    <el-input
+                        type="textarea"
+                        style="width: 96%"
+                        :rows="7"
+                        placeholder="请说点什么吧..."
+                        v-model="textarea">
+                        </el-input>
+                        <el-button type="success" class="m_submit_buttom" ><i class="el-icon-edit"></i>发表</el-button>
+                </div>
+                <!-- 留言列表 -->
+                <div class="m_comment_list">
+                    <div>
+                        <h3 class="comment_list_title">留言</h3>
+                        <div class="comment">
+                            <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
+                            <div class="content">
+                                <a href="#" class="author"><span>author</span></a>
+                                <div class="metadata"><span>2021-01-23:59</span></div>
+                                <div class="text">内容</div>
+                                <div class="actions">
+                                    <a href="#" class="reply">回复</a>
+                                </div>
                             </div>
-                        </div>
-                        <!-- 子集留言 -->
-                        <div class="comment-child">
-                            <div class="comment">
-                                <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
-                                <div class="content">
-                                    <a href="#" class="author">
-                                        <span>author</span></a>
-                                    <div class="author-tag">栈主</div>
-                                    <span class="mteal">@ author</span>
-                                    
-                                    <div class="metadata"><span>2021-01-23:59</span></div>
-                                    <div class="text">内容</div>
-                                    <div class="actions">
-                                        <a href="#" class="reply">回复</a>
+                            <!-- 子集留言 -->
+                            <div class="comment_child">
+                                <div class="comment">
+                                    <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
+                                    <div class="content">
+                                        <a href="#" class="author">
+                                            <span>author</span></a>
+                                        <div class="author_tag">栈主</div>
+                                        <span class="mteal">@ author</span>
+                                        
+                                        <div class="metadata"><span>2021-01-23:59</span></div>
+                                        <div class="text">内容</div>
+                                        <div class="actions">
+                                            <a href="#" class="reply">回复</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="comment">
-                        <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
-                        <div class="content">
-                            <a href="#" class="author"><span>author</span></a>
-                            <div class="metadata"><span>2021-01-23:59</span></div>
-                            <div class="text">内容</div>
-                            <div class="actions">
-                                <a href="#" class="reply">回复</a>
+                        <div class="comment">
+                            <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
+                            <div class="content">
+                                <a href="#" class="author"><span>author</span></a>
+                                <div class="metadata"><span>2021-01-23:59</span></div>
+                                <div class="text">内容</div>
+                                <div class="actions">
+                                    <a href="#" class="reply">回复</a>
+                                </div>
                             </div>
-                        </div>
-                        <!-- 子集留言 -->
-                        <div class="comment-child">
-                            <div class="comment">
-                                <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
-                                <div class="content">
-                                    <a href="#" class="author">
-                                        <span>author</span></a>
-                                    <div class="author-tag">栈主</div>
-                                    <span class="mteal">@ author</span>
-                                    
-                                    <div class="metadata"><span>2021-01-23:59</span></div>
-                                    <div class="text">内容</div>
-                                    <div class="actions">
-                                        <a href="#" class="reply">回复</a>
+                            <!-- 子集留言 -->
+                            <div class="comment_child">
+                                <div class="comment">
+                                    <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
+                                    <div class="content">
+                                        <a href="#" class="author">
+                                            <span>author</span></a>
+                                        <div class="author_tag">栈主</div>
+                                        <span class="mteal">@ author</span>
+                                        
+                                        <div class="metadata"><span>2021-01-23:59</span></div>
+                                        <div class="text">内容</div>
+                                        <div class="actions">
+                                            <a href="#" class="reply">回复</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="m-page">
-                <el-pagination
-                    background
-                    layout="prev, pager, next"
-                    :total="1000">
-                </el-pagination>
+                <div class="m_page">
+                    <el-pagination
+                        background
+                        layout="prev, pager, next"
+                        :total="1000">
+                    </el-pagination>
+                </div>
+                <br><br>
             </div>
         </div>
     </div>
@@ -90,14 +115,17 @@
 
 <script>
 import NavBar from '../../components/NavBar.vue'
+import Aside from '../../components/Aside.vue'
 export default {
     name: "Friends",
     components: {
         NavBar,
+        Aside,
     },
     data() {
     return {
-      textarea: ''
+      textarea: '',
+      input_info: ''
     }
   }
 }
@@ -108,39 +136,63 @@ export default {
   color: black;
   width: 100%;
   height: 100%;
-  background-image: url(../../assets/img/bg_lake.jpg);
+  background-image: url(../../assets/img/sky.jpg);
   background-size: cover;
   background-position: center;
   /* position: relative; */
   overflow: auto;
 }
-.message-content {
-    width: 90%;
-    margin: 30px auto;
+.headline {
+   width: 100%;
+   height: 300px;
+   font-size: 40px;
+   line-height: 300px;
+   text-align: center;
+   vertical-align: middle;
+   font-family: arzhu;
+   color: #fff;
+   font-weight: bold;
+}
+.container {
+  width: 92%;
+  margin: 0px auto 0;
+  vertical-align: top;
+}
+.message_content {
+    width: 75%;
     background: #fff;
     opacity: 0.9;
     border-radius: 5px;
+    margin-bottom: 30px;
+    box-shadow: 3px 3px 3px 0 rgba(0, 0, 0, .05);
+    -webkit-box-shadow: #000000 0px 0px 10px;
+    display: inline-block;
 }
-.message-new {
+.message_new {
     margin-bottom: 60px;
 }
-.m-comment-list {
+.info_input {
+    width: 30%;
+    margin: 1.5%;
+    display: inline-block;
+}
+.m_comment_list {
     border: 1px solid rgba(34,36,38,.15);
     border-top: 2px solid #00B5AD;
     padding: 14px;
     box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);
     border-radius: 5px;
 }
-.comment-list-title {
+.comment_list_title {
     margin-top: 0;
     border-bottom: 1px solid #dddfde;
     text-align: left;
 }
-.m-comment-list .comment {
+.m_comment_list .comment {
     margin-top: 14px;
     padding-top: 5px;
 }
-.m-comment-list .comment .avatar {
+.m_comment_list .comment .avatar {
     height: 40px;
     width: 40px;
     margin-top: 5px;
@@ -148,37 +200,37 @@ export default {
     float: left;
     vertical-align: top;
 }
-.m-comment-list .comment .avatar img {
+.m_comment_list .comment .avatar img {
     height: 40px;
     width:40px;
     border-radius: 3px;
 }
-.m-comment-list .comment .content {
+.m_comment_list .comment .content {
     text-align: left;
     margin-left: 59px;
     position: relative;
     display: block;
 }
-.m-comment-list .comment .content .author {
+.m_comment_list .comment .content .author {
     text-decoration: none;
     color: rgba(0,0,0,.87);
     font-weight: 700;
     display: inline-block;
 }
-.m-comment-list .comment .content a :hover {
+.m_comment_list .comment .content a :hover {
     color: #4183C4;
 }
-.m-comment-list .comment .content .metadata {
+.m_comment_list .comment .content .metadata {
     display: inline-block;
     margin-left: 10px;
     color: rgba(0,0,0,.4);
     font-size: .875em;
 }
-.m-comment-list .comment .content .text {
+.m_comment_list .comment .content .text {
     margin: 5px 0 10px;
 }
 
-.m-comment-list .comment .content .reply {
+.m_comment_list .comment .content .reply {
     text-decoration: none;
     font-size: 14px;
     cursor: pointer;
@@ -186,12 +238,12 @@ export default {
     margin: 0 .75em 0 0;
     color: rgba(0,0,0,.4);
 }
-.m-comment-list .comment .comment-child {
+.m_comment_list .comment .comment_child {
     margin: -21px 0 -14px 20px;
     padding: 20px  0 28px 39px;
     border-left: 1px solid  #dddfde;
 }
-.m-comment-list .comment .content .author-tag {
+.m_comment_list .comment .content .author_tag {
     display: inline-block;
     padding: 2px;
     margin: 0 10px 0 5px;
@@ -201,27 +253,27 @@ export default {
     color: #00B5AD;
     border: 1px solid #00B5AD;
 }
-.m-comment-list .comment .content .mteal {
+.m_comment_list .comment .content .mteal {
     color: #00B5AD;
     font-weight: 700;
 }
-.m-submit-buttom {
+.m_submit_buttom {
     background: #00B5AD;
     color: #fff;
     font-size: 18px;
     font-weight: 700;
     margin-top: 5px;
-    margin-right: 10px;
+    margin-right: 2%;
     float: right;
 }
-.m-submit-buttom .el-icon-edit {
+.m_submit_buttom .el-icon-edit {
     margin-right: 7px;
 }
-.m-page {
+.m_page {
   background: #fff;
   border-radius: 5px;
   width: 92%;
-  margin: 0px auto 100px;
+  margin: 20px auto 0;
   padding: 10px;
   opacity: 0.9;
 }

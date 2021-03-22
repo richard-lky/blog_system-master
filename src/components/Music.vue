@@ -1,142 +1,56 @@
 <template>
-    <div>
-        <div>
-            <nav-bar></nav-bar>
+    <div class="bbox" :class="{bbox_active:disActive}">
+        <div class="pan" title="打开/收起" :style="{backgroundImage:'url('+pan+')'}" :class="{pan_active:disActive}" @click="DisActive">
+            <img :src="musicImg" alt="" class="pan_c">
         </div>
-        <transition name="dis_list">
-            <div class="list_box" v-if="listIsDis">
-                <transition name="music_alert">
-                    <span class="music_alert" v-if="musicAlertState">{{musicAlertVal}}</span>
-                </transition>
-                <div class="music_list">
-                    <div class="list_l">
-                        <ul class="music_type">
-                            <li v-for="item in musicTypeList" :key="item.id" @click="_getMusicType(item.id)" :class="{type_active:item.id==thisMusicType}">{{item.name}}</li>
-                        </ul>
-                        <div class="list_title">
-                            <span style="font-size: 14px;">歌曲列表</span>
-                            <img :src="musicStateButton" alt="" class="music_state" @click="MusicStateChange">
-                            <div class="music_search_box">
-                                <input type="text" class="music_search" v-model="musicSearchVal" placeholder="搜索歌曲">
-                                <transition name="music_search">
-                                    <ul  class="search_list" v-if="musicSearchVal!=''">
-                                        <li v-for="item in musicSearchList" :key="item.id" @click="ListAdd(item)">
-                                            <span class="music_search_name">{{item.name}}</span>
-                                            <span class="music_search_ar">{{item.artists[0].name}}</span>
-                                        </li>
-                                    </ul>
-                                </transition>
-                            </div>
-                        </div>
-                        <div class="music_ul_title">
-                            <span>歌曲</span><span>歌手</span><span>专辑</span>
-                        </div>
-                        <!-- 歌曲列表 -->
-                        <ul class="list">
-                            <li v-for="(item,index) in thisMusicList" :key="item.id" @mouseover="ButtonActive(index)" @dblclick="ListPlay((thisListPage-1)*10+index)">
-                                <div class="this_music_shlter" v-if="(thisListPage-1)*10+index==thisMusicIndex"></div>
-                                <span>{{item.name}}</span><span>{{item.ar[0].name}}</span><span>{{item.al.name}}</span>
-                                <transition name="list_button">
-                                    <div class="music_button" v-if="listButtonActiveIndex==index">
-                                        <div class="list_play" title="播放这首歌" :style="{backgroundImage:'url('+listPlay+')'}" @click="ListPlay((thisListPage-1)*10+index)"></div>
-                                        <div class="list_play" title="添加到 My Songs" :style="{backgroundImage:'url('+add+')'}" @click="ListAdd(item)" v-if="thisMusicType!=-1"></div>
-                                    </div>
-                                </transition>
-                            </li>
-                        </ul>
-                        <div class="list_page">
-                            <div class="page_last" v-if="thisListPage!=1"  @click="ListChange(true)" title="上一頁"><li class="el-icon-back"></li></div>
-                            <div class="page_next"  v-if="thisListPage!=Math.ceil(musicList.length/10)" @click="ListChange(false)" title="下一頁"><li class="el-icon-right" ></li></div>
-                        </div>
+        <div class="box" :style="{backgroundImage:'url('+musicImg+')'}" :class="{box_active:disActive}" @dblclick="DisList">
+            <div class="music_shlter_2" :style="{backgroundImage:'url('+musicImg+')'}" :class="{shlter_active:disActive}"></div>
+            <div class="music_shlter" :style="{backgroundImage:'url('+musicImg+')'}" :class="{shlter_active:disActive}"></div>
+            <div class="music_shlter_3"></div>
+            <div class="music_dis">
+                <!-- <div class="dis_list" @click="DisList">···</div> -->
+                <p class="music_title">{{musicTitle}}</p>
+                <p class="music_intro">歌手: {{musicName}}</p>
+                <!-- 歌词 -->
+                <ul class="music_words">
+                    <div class="music_words_box" :style="{top:wordsTop+'px'}">  
+                        <li v-for="(item,index) in musicWords" class="music_word" :key="item.id" :class="{word_highlight:wordIndex==index}">{{item}}</li>
                     </div>
-                    <div class="list_r">
-                        <img class="music_list_bg" :src="musicImg" />
-                        <div class="music_list_shlter" :style="{backgroundImage:'url('+shlter+')'}"></div>
-                        <!-- 评论列表 -->
-                        <!-- <ul class="music_talk_list">
-                            <li v-for="(item,index) in hotTalkList" :key="index">
-                                <div class="talk_head">
-                                    <img :src="item.user.avatarUrl" alt="" class="talk_head_img">
-                                    <span class="talk_head_name">{{item.user.nickname}}</span>
-                                </div>
-                                <p class="talk_content">
-                                    <img class="talk_icon_l" :src="talkicon1"/>
-                                    {{item.content}}
-                                    <img class="talk_icon_r" :src="talkicon2"/>
-                                </p>
-                            </li>
-                        </ul> -->
-                        <!-- 歌词 -->
-                        <p class="music_title">{{musicTitle}}</p>
-                        <p class="music_intro">歌手: {{musicName}}</p>
-                        <ul class="music_words">
-                            <div class="music_words_box" :style="{top:wordsTop+'px'}">  
-                                <li v-for="(item,index) in musicWords"  :key="index" class="music_word" :class="{word_highlight:wordIndex==index}">{{item}}</li>
-                            </div>
-                        </ul>
-                    </div>
-                </div>
+                </ul>
             </div>
-        </transition>
-        <div class="bbox" :class="{bbox_active:disActive}">
-            <div class="pan" title="打开/收起" :style="{backgroundImage:'url('+pan+')'}" :class="{pan_active:disActive}" @click="DisActive">
-                <img :src="musicImg" alt="" class="pan_c">
-            </div>
-            <div class="box" :style="{backgroundImage:'url('+musicImg+')'}" :class="{box_active:disActive}" @dblclick="DisList">
-                <div class="music_shlter_2" :style="{backgroundImage:'url('+musicImg+')'}" :class="{shlter_active:disActive}"></div>
-                <div class="music_shlter" :style="{backgroundImage:'url('+musicImg+')'}" :class="{shlter_active:disActive}"></div>
-                <div class="music_shlter_3"></div>
-                <div class="music_dis">
-                    <!-- <div class="dis_list" @click="DisList">···</div> -->
-                    <p class="music_title">{{musicTitle}}</p>
-                    <p class="music_intro">歌手: {{musicName}}</p>
-                    <!-- 歌词 -->
-                    <ul class="music_words">
-                        <div class="music_words_box" :style="{top:wordsTop+'px'}">  
-                            <li v-for="(item,index) in musicWords" class="music_word" :key="item.id" :class="{word_highlight:wordIndex==index}">{{item}}</li>
-                        </div>
-                    </ul>
+            <div class="control_box">
+                <div class="control_button">
+                    <img :src="playIcon" alt="" class="control_icon">
                 </div>
-                <div class="control_box">
-                    <div class="control_button">
-                        <img :src="playIcon" alt="" class="control_icon">
-                    </div>
-                    <!-- 进度条 -->
-                    <div class="progress">
-                        <div class="progress_c" :style="{width:currentProgress}">
-                            <div class="progress_circle">
-                                <div class="progress_circle_c"></div>
-                            </div>
+                <!-- 进度条 -->
+                <div class="progress">
+                    <div class="progress_c" :style="{width:currentProgress}">
+                        <div class="progress_circle">
+                            <div class="progress_circle_c"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <video id="music" :src="musicUrl" name="media">
-            </video>
         </div>
+        <video id="music" :src="musicUrl" name="media">
+        </video>
     </div>
-    
 </template>
 <script>
-import NavBar from '../../components/NavBar.vue'
-
-import { getWords,getMusicInfo,getMusicUrl,getHotMusic,getSearchSuggest,getHotTalk } from '../../assets/js/music'
-import pan from '../../assets/img/pan.png'
-import play from '../../assets/img/play.png'
-import pause from '../../assets/img/pause.png'
-import add from '../../assets/img/add.png'
-import shlter from '../../assets/img/list_pan.png'
-import listPlay from '../../assets/img/list_play_hover.png'
-import state0 from '../../assets/img/state_0.png'
-import state1 from '../../assets/img/state_1.png'
-import talkicon1 from '../../assets/img/talkicon1.png'
-import talkicon2 from '../../assets/img/talkicon2.png'
+import { getWords,getMusicInfo,getMusicUrl,getHotMusic,getSearchSuggest,getHotTalk } from '../assets/js/music'
+import pan from '../assets/img/pan.png'
+import play from '../assets/img/play.png'
+import pause from '../assets/img/pause.png'
+import add from '../assets/img/add.png'
+import shlter from '../assets/img/list_pan.png'
+import listPlay from '../assets/img/list_play_hover.png'
+import state0 from '../assets/img/state_0.png'
+import state1 from '../assets/img/state_1.png'
+import talkicon1 from '../assets/img/talkicon1.png'
+import talkicon2 from '../assets/img/talkicon2.png'
 import $ from 'jquery'
 export default {
-    name:'Player',
-    components: {
-        NavBar,
-    },
+    name:'Music',
     data() {
         return {
             o:0,
@@ -152,7 +66,7 @@ export default {
             talkicon1,
             talkicon2,
             playState:false,
-            playIcon:play,
+            playIcon:state0,
             musicImg:'',
             musicUrl:'',
             musicWords:[],
@@ -399,9 +313,9 @@ export default {
             let playerTimer=setInterval(timer,1000);
             //定时器函数
             $('body').on('click',()=>{
-            //     player.play();
-            //     $('body').unbind('click');
-                   if(this.playState){
+                // player.play();
+                // $('body').unbind('click');
+                if(this.playState){
                     this.playState=false;
                     this.playIcon=this.play;
                     $('body').unbind('click');
@@ -509,8 +423,8 @@ export default {
 }
 </script>
 <style scoped>
-@import url('../../assets/css/player.css');
-@import url('../../assets/css/playermobile.css');
+@import url('../assets/css/player.css');
+@import url('../assets/css/playermobile.css');
 .el-icon-back {
     font-size: 25px;
 }

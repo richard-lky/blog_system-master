@@ -1,54 +1,6 @@
 <template>
   <div :class="{ 'content-box': true, 'content-collapse': collapse }">
     <div class="content">
-      <div class="screen">
-        <el-form
-          :inline="true"
-          :model="formInline"
-          class="demo-form-inline"
-          size="small"
-        >
-          <el-form-item label="分类">
-            <el-select v-model="formSeletor.sort" placeholder="分类">
-              <el-option label="所有" value="所有"></el-option>
-              <el-option
-                :label="item.sortName"
-                :value="item.sortName"
-                v-for="item in bookSorts"
-                :key="item.sortId"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="出版社">
-            <el-select v-model="formSeletor.pub" placeholder="出版社">
-              <el-option label="所有" value="所有"></el-option>
-              <el-option
-                :label="item"
-                :value="item"
-                v-for="item in bookPubs"
-                :key="item"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <!-- <el-form-item label="剩余情况">
-        <el-input v-model="formSeletor.user" placeholder="审批人"></el-input>
-      </el-form-item> -->
-          <el-form-item label="状态">
-            <el-select
-              v-model="formSeletor.status"
-              placeholder="剩余情况"
-              width="50px"
-            >
-              <el-option label="所有" value="所有"></el-option>
-              <el-option label="已借" value="0"></el-option>
-              <el-option label="未借" value="1"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmitSeletor">查询</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
       <div class="search">
         <el-form
           :inline="true"
@@ -59,7 +11,7 @@
           <el-form-item>
             <el-input
               v-model="form.bookName"
-              placeholder="查询借阅信息"
+              placeholder="请输入评论内容"
             ></el-input>
           </el-form-item>
           <el-form-item>
@@ -77,14 +29,14 @@
           <el-table-column
             prop="bookName"
             :show-overflow-tooltip="true"
-            label="书名"
+            label="文章"
             fixed
           >
           </el-table-column>
           <el-table-column
             prop="bookSort"
             :show-overflow-tooltip="true"
-            label="类别"
+            label="评论人"
           >
           </el-table-column
           ><el-table-column
@@ -424,6 +376,6 @@ export default {
   border-radius: 5px;
 }
 .container .content-box .content .search {
-  padding-left: 347px;
+  text-align: center;
 }
 </style>

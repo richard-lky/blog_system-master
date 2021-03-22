@@ -4,21 +4,29 @@ import Index from '../views/user/Index.vue'
 
 import Home from '../views/admin/Home.vue'
 import UserList from '../views/admin/UserList.vue'
-import Books from '../views/admin/Books.vue'
+import Article from '../views/admin/Article.vue'
 import Notice from '../views/admin/Notice.vue'
 import Login from '../views/Login.vue'
 import HelloWorld from '../components/HelloWorld.vue'
 import NoFind from '../views/404.vue'
 import Category from '../views/user/Category.vue'
-import Edit from '../views/user/Edit.vue'
+import Edit from '../views/admin/Edit.vue'
 import Details from '../views/user/Details.vue'
-import Music from '../views/user/Music.vue'
 import Message from '../views/user/Message.vue'
 import Player from '../views/user/Player.vue'
 import Friends from '../views/user/Friends.vue'
 import Photo from '../views/user/Photo.vue'
 import Resources from '../views/user/Resources.vue'
 import About from '../views/user/About.vue'
+import Archives from '../views/user/Archives.vue'
+import Comment from '../views/admin/Comment.vue'
+import Sort from '../views/admin/Sort.vue'
+import Label from '../views/admin/Label.vue'
+import Words from '../views/admin/Words.vue'
+import Link from '../views/admin/Link.vue'
+import Picture from '../views/admin/Picture.vue'
+import Knowledge from '../views/admin/Knowledge.vue'
+import Author from '../views/admin/Author.vue'
 
 Vue.use(VueRouter)
 
@@ -28,9 +36,9 @@ const routes = [{
   component: UserList
 },
 {
-  path: '/books',
-  name: 'books',
-  component: Books
+  path: '/article',
+  name: 'article',
+  component: Article
 },
 {
   path: '/notice',
@@ -39,7 +47,7 @@ const routes = [{
 },
 {
   path: '/helloWorld',
-  name: 'HelloWorld',
+  name: 'helloWorld',
   component: HelloWorld
 },
 {
@@ -66,11 +74,6 @@ const routes = [{
   path: '/details',
   name: 'details',
   component: Details
-},
-{
-  path: '/music',
-  name: 'music',
-  component: Music
 },
 {
   path: '/player',
@@ -101,6 +104,51 @@ const routes = [{
   path: '/about',
   name: 'about',
   component: About
+},
+{
+  path: '/archives',
+  name: 'archives',
+  component: Archives
+},
+{
+  path: '/comment',
+  name: 'comment',
+  component: Comment
+},
+{
+  path: '/sort',
+  name: 'sort',
+  component: Sort
+},
+{
+  path: '/label',
+  name: 'label',
+  component: Label
+},
+{
+  path: '/words',
+  name: 'words',
+  component: Words
+},
+{
+  path: '/link',
+  name: 'link',
+  component: Link
+},
+{
+  path: '/picture',
+  name: 'picture',
+  component: Picture
+},
+{
+  path: '/knowledge',
+  name: 'knowledge',
+  component: Knowledge
+},
+{
+  path: '/author',
+  name: 'author',
+  component: Author
 },
 {
   path: '/home',

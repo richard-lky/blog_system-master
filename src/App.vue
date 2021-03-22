@@ -1,13 +1,19 @@
 <template>
   <div id="app">
     <router-view></router-view>
+    <music></music>
   </div>
 </template>
 
 
 <script>
+import Music from './components/Music.vue'
+
 export default {
   name: "App",
+  components: {
+    Music,
+  }
 };
 </script>
 

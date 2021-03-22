@@ -1,38 +1,73 @@
 <template>
     <div id="edit">
-        <el-row>
-            <el-col><nav-bar></nav-bar></el-col>
-        </el-row>
-        <div>
-            <div class="m-submit">
-                <el-button class="m-submit-buttom" type="primary" round>保存草稿</el-button>
-                <el-button class="m-submit-buttom" type="success" round>发布文章</el-button>
-                <div class="m-submit-img"><a href="#"><img src="../../assets/img/bg_index.jpg" alt=""></a></div>
-            </div>
-            <!--markdown编辑-->
-            <mavon-editor
-                v-model="content"
-                ref="md"
-                @imgAdd="$imgAdd"
-                @imgDel="$imgDel"
-                @change="change"
-                :toolbars="toolbars"
-                :ishljs="false"
-                :toolbarsBackground="'#f9f9f9'"
-                style="height: calc(100vh - 50px)"
-                />
+      <el-form
+        :inline="true"
+        :model="formInline"
+        class="text-form-inline"
+      >
+        <el-form-item>
+          <el-select v-model="formSeletor.sort" placeholder="请选择文章分类">
+            <el-option label="所有" value="所有"></el-option>
+            <el-option
+              :label="item.sortName"
+              :value="item.sortName"
+              v-for="item in bookSorts"
+              :key="item.sortId"
+            ></el-option>
+          </el-select>
+          <el-select v-model="formSeletor.sort" placeholder="请选择文章标签">
+            <el-option label="所有" value="所有"></el-option>
+            <el-option
+              :label="item.sortName"
+              :value="item.sortName"
+              v-for="item in bookSorts"
+              :key="item.sortId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-input
+          placeholder="请输入文章标题"
+          v-model="input"
+          style="width:35%;text-align: left; margin-right: 10px"
+          clearable>
+        </el-input>
+        <el-button type="primary">上传图片</el-button>
+        <el-input
+          type="textarea"
+          :rows="2"
+          placeholder="请输入文章概述"
+          style="margin-bottom:22px"
+          v-model="textarea">
+        </el-input>
+      </el-form>
+        <!--markdown编辑-->
+        <mavon-editor
+            v-model="content"
+            ref="md"
+            @imgAdd="$imgAdd"
+            @imgDel="$imgDel"
+            @change="change"
+            :toolbars="toolbars"
+            :ishljs="false"
+            :toolbarsBackground="'#f9f9f9'"
+            style="height: calc(100vh - 50px)"
+            />
+        <div class="m-submit">
+            <el-button class="m-submit-buttom" type="primary" round>保存草稿</el-button>
+            <el-button class="m-submit-buttom" type="success" round>发布文章</el-button>
         </div>
     </div>
 </template>
 <script>
-import NavBar from '../../components/NavBar.vue'
 export default {
   name: 'Edit',
   components: {
-    NavBar
   },
   data () {
       return {
+        formSeletor: {
+          sort: '',
+        },
         value: '',
         content: '',
         toolbars: {
@@ -105,29 +140,16 @@ export default {
 </script>
 
 <style scoped>
+#edit {
+  padding: 0 10px;
+  overflow: scroll;
+}
 .m-submit {
-    margin: 5px 0;
+    margin: 10px 0;
     padding: 0 5px;
     text-align: right;
 }
 .m-submit-buttom {
     display: inline-block;
-}
-.m-submit-img {
-    width: 40px;
-    height: 40px;
-    margin: 0 10px;
-    display: inline-block;
-    vertical-align: top;
-}
-.m-submit-img img{
-    width: 40px;
-    height: 40px;
-    vertical-align: top;
-    border-radius: 50%;
-}
-.m-submit-img a {
-    text-decoration: none;
-    color: inherit;
 }
 </style>

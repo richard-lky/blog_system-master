@@ -1,64 +1,104 @@
 <template>
-    <div id="Photo">
-        <div>
-            <nav-bar></nav-bar>
-        </div>
-        <div class="m_photo">
-            <div class="image_lazy">
-                <div class="image_item" v-for="url in urls" :key="url">
-                    <el-image :src="url" :preview-src-list="urls" lazy class="image_item"></el-image>
-                    <span class="image_info">信息</span>
-                </div>
-            </div>
-        </div>
+  <div id="album">
+    <nav-bar></nav-bar>
+    <div id="wrap">
+      <vue-waterfall-easy
+        :imgsArr="imgsArr"
+        @scrollReachBottom="fetchImgsData"
+      ></vue-waterfall-easy>
     </div>
+  </div>
 </template>
+
 <script>
-import NavBar from '../../components/NavBar.vue'
+import vueWaterfallEasy from "vue-waterfall-easy";
+import NavBar from "../../components/NavBar.vue";
+
 export default {
-    name: "Photo",
-    components: {
-        NavBar,
-    },
-    data() {
-      return {
-        urls: [
-          'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-          'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
-          'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
-          'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
-          'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
-          'https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg',
-          'https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg'
-        ]
+  name: "Photo",
+  components: {
+    vueWaterfallEasy,
+    NavBar,
+  },
+  data() {
+    return {
+      imgsArr: [], //存放所有已加载图片的数组（即当前页面会加载的所有图片）
+      fetchImgsArr: [], //存放每次滚动时下一批要加载的图片的数组
+    };
+  },
+  methods: {
+    initImgsArr(n, m) {
+      //初始化图片数组的方法，把要加载的图片装入
+      var arr = [];
+      for (var i = n; i < m; i++) {
+        if (i % 5 == 1)
+          arr.push({
+            src: `http://xfz.zone/assets/img/blog/helloworld-1.jpg`,
+            link: "",
+            info: "一些图片描述文字" + i,
+          });
+        //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
+        else if (i % 5 == 2)
+          arr.push({
+            src: `http://xfz.zone/images/avatar.png`,
+            link: "",
+            info: "一些图片描述文字" + i,
+          });
+        //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
+        else if (i % 5 == 3)
+          arr.push({
+            src: `http://browser9.qhimg.com/bdm/384_237_0/t01a78941bc25ae2cf9.jpg`,
+            link: "",
+            info: "一些图片描述文字" + i,
+          });
+        //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
+        else if (i % 5 == 4)
+          arr.push({
+            src: `http://browser9.qhimg.com/bdm/768_474_0/t0148bbf85c878da0b8.jpg`,
+            link: "",
+            info: "一些图片描述文字" + i,
+          });
+        //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
+        else
+          arr.push({
+            src: `http://browser9.qhimg.com/bdm/768_474_0/t013a4ed4683039d101.jpg`,
+            link: "",
+            info: "一些图片描述文字" + i,
+          }); //src为加载的图片的地址、link为超链接的链接地址、 info为自定义的图片展示信息，请根据自己的情况自行填写
       }
-    }
-}
+      return arr;
+    },
+
+    fetchImgsData() {
+      //获取新的图片数据的方法，用于页面滚动满足条件时调用
+      if (this.imgsArr.length >= 100) {
+        console.log("已经到底了");
+        return;
+      }
+      this.imgsArr = this.imgsArr.concat(this.fetchImgsArr); //数组拼接，把下一批要加载的图片放入所有图片的数组中
+      console.log("加载更多");
+      //this.imgsArr = this.imgsArr.concat(this.imgsArr)   //数组拼接，把下一批要加载的图片放入所有图片的数组中
+    },
+  },
+  created() {
+    this.imgsArr = this.initImgsArr(0, 20); //初始化第一次（即页面加载完毕时）要加载的图片数据
+    this.fetchImgsArr = this.initImgsArr(10, 20); // 模拟每次请求的下一批新的图片的数据数据
+  },
+};
 </script>
+
 <style scoped>
-.m_photo {
-    margin-top: 30px;
-    width: 100%;
-    height: 100%;
+#album {
+  width: 100%;
+  padding-bottom: 30px;
+  height: 100%;
+  /* margin-top: 60px; */
+  /* box-sizing: border-box; */
 }
-.image_lazy {
-    width: 100%;
-    height: 635px;
-    padding-bottom: 100px;
-    overflow: scroll;
-}
-.image_item {
-    display: inline-block;
-    max-width: 505px;
-    position: relative;
-}
-.image_info {
-    color:  #fff;
-    font-family: Tahoma,Helvetica,Arial,'宋体',sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    position: absolute;
-    left: 20px;
-    bottom: 20px;
+#wrap {
+  /* margin-top: 60px; */
+  width: 100%;
+  padding-bottom: 30px;
+  height: calc(100%);
 }
 </style>

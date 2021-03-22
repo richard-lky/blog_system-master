@@ -1,5 +1,17 @@
+// module.exports = {
+//     devServer: {
+//         proxy: 'http://localhost:8081'
+//     }
+// }
+
 module.exports = {
     devServer: {
-        proxy: 'http://127.0.0.1:3000'
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8081', //对应自己的接口
+          changeOrigin: true,
+          ws: true,
+        }
+      }
     }
-}
+  }

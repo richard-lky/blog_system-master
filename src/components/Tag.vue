@@ -15,9 +15,17 @@
         effect="dark"
       >
         <div class="iframe" v-if="item.path == 'user'"><user-list /></div>
-        <div class="iframe" v-if="item.path == 'borrow'"><borrow /></div>
-        <div class="iframe" v-if="item.path == 'books'"><books /></div>
+        <div class="iframe" v-if="item.path == 'comment'"><comment /></div>
+        <div class="iframe" v-if="item.path == 'article'"><Article /></div>
+        <div class="iframe" v-if="item.path == 'edit'"><Edit /></div>
+        <div class="iframe" v-if="item.path == 'sort'"><sort /></div>
+        <div class="iframe" v-if="item.path == 'label'"><Label /></div>
+        <div class="iframe" v-if="item.path == 'words'"><words /></div>
+        <div class="iframe" v-if="item.path == 'link'"><Link /></div>
+        <div class="iframe" v-if="item.path == 'picture'"><Picture /></div>
+        <div class="iframe" v-if="item.path == 'knowledge'"><Knowledge /></div>
         <div class="iframe" v-if="item.path == 'notice'"><notice /></div>
+        <div class="iframe" v-if="item.path == 'author'"><author /></div>
         <div class="iframe" v-if="item.path == 'home'"><home /></div>
       </el-tab-pane>
     </el-tabs>
@@ -25,17 +33,33 @@
 </template>
 <script>
 import UserList from "../views/admin/UserList.vue";
-import Borrow from "../views/admin/Borrow.vue";
-import Books from "../views/admin/Books.vue";
+import Comment from "../views/admin/Comment.vue";
+import Sort from "../views/admin/Sort.vue";
+import Label from "../views/admin/Label.vue";
+import Words from "../views/admin/Words.vue";
+import Link from "../views/admin/Link.vue";
+import Picture from "../views/admin/Picture.vue";
+import Knowledge from "../views/admin/Knowledge.vue";
+import Article from "../views/admin/Article.vue";
+import Edit from "../views/admin/Edit.vue";
 import Notice from "../views/admin/Notice.vue";
+import Author from "../views/admin/Author.vue";
 import Home from "../views/admin/Home.vue";
 export default {
   namne: "Tag",
   components: {
     UserList,
-    Borrow,
-    Books,
+    Comment,
+    Article,
+    Edit,
+    Sort,
+    Label,
+    Words,
+    Link,
+    Picture,
+    Knowledge,
     Notice,
+    Author,
     Home,
   },
   data() {
@@ -129,7 +153,7 @@ export default {
   text-align: left;
   -webkit-transition: left 0.3s ease-in-out;
   transition: left 0.3s ease-in-out;
-  overflow: hidden;
+  overflow: scroll;
   background: #f0f0f0;
 }
 .content-collapse {

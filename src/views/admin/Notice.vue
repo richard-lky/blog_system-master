@@ -31,18 +31,16 @@
         border
         style="width: 100%; min-height: 330px; margin-bottom: 15px"
       >
+        <el-table-column prop="userName" label="序号"></el-table-column>
         <el-table-column
           :show-overflow-tooltip="true"
           prop="noticeContent"
           label="公告内容"
         ></el-table-column>
-        <el-table-column prop="userName" label="上传人" width="120">
-        </el-table-column>
         <el-table-column
           prop="noticeCreatetime"
           sortable
           label="上传日期"
-          width="140"
         >
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="144">
@@ -328,7 +326,6 @@ export default {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 100%;
   padding: 5px 10px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -344,7 +341,7 @@ export default {
   border-radius: 5px;
 }
 .container .content-box .content .search {
-  padding-left: 375px;
+  text-align: center;
 }
 .container .content-box .content .search .publish {
   margin-left: 50px;
@@ -362,5 +359,8 @@ export default {
 .tag-btn {
   cursor: pointer;
   margin-right: 10px;
+}
+.page {
+  text-align: center;
 }
 </style>

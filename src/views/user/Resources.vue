@@ -1,52 +1,82 @@
 <template>
-    <div id="Resources" class="m_resources">
+    <div id="Resources" class="m_resources top">
+        <el-backtop target=".top" :bottom="200"></el-backtop>
         <div>
             <nav-bar></nav-bar>
         </div>
-        <div class="resources_contain">
-            <div class="resources_items">
-                <div class="resources_item">
+        <div class="headline">学习资源</div>
+        <div class="container">
+            <Aside></Aside>
+            <div class="resource_container">
+                <div class="resources_contain">
                     <div class="resources_items">
                         <div class="resources_item">
-                            <a href="#" class="item_name">数据表GV</a>
-                            <div class="item_number">4</div>
+                            <div class="resources_items">
+                                <div class="resources_item">
+                                    <a href="#" class="item_name">数据表GV</a>
+                                    <div class="item_number">4</div>
+                                </div>
+                            </div>
+                            <div class="resources_items">
+                                <div class="resources_item">
+                                    <a href="#" class="item_name">数据表GV</a>
+                                    <div class="item_number">4</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="resources_items">
-                        <div class="resources_item">
-                            <a href="#" class="item_name">数据表GV</a>
-                            <div class="item_number">4</div>
+                </div>
+                <div class="resources_contain">
+                    <div class="resources_content">
+                        <div class="resources_collect">
+                            <div class="resource_title"><li class="el-icon-s-flag"></li> <span>学习资源</span></div>
+                            <div class="collect_content">
+                                <a class="collect_item" v-for="item in articleData" :key="item.id">
+                                    <div class="item_content">
+                                        <img :src="$baseImgUrl + item.resourceImg" alt="">
+                                        <div class="link_name">{{item.resourceName}}</div>
+                                        <div class="link_meta">视频类</div>
+                                        <div class="link_description">{{item.resourceDescribe}}</div>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    <div class="resources_contain">
-        <div class="resources_content">
-            <div class="resources_collect">
-                <div class="resource_title"><li class="el-icon-s-flag"></li> <span>学习资源</span></div>
-                <div class="collect_content">
-                    <a class="collect_item">
-                        <div class="item_content">
-                            <img src="../../assets/img/bg_lake.jpg" alt="">
-                            <div class="link_name">B站</div>
-                            <div class="link_meta">视频类</div>
-                            <div class="link_description">学习网站</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
     </div>
 </template>
 
 <script>
 import NavBar from '../../components/NavBar.vue'
+import Aside from '../../components/Aside.vue'
 export default {
     name: "Resources",
     components: {
         NavBar,
+        Aside,
+    },
+    data() {
+        return {
+            resourceCategory: 1,
+            articleData: [],
+        }
+    },
+    created() {
+        const that = this;
+        this.$axios.get('/resource/showResourceAll', {
+            params: {
+                resourceCategory: this.resourceCategory,
+            }
+        })
+        .then(function (response) {
+            console.log(response.data.data);
+            that.articleData = response.data.data;
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
     }
     
 }
@@ -57,19 +87,37 @@ export default {
   color: black;
   width: 100%;
   height: 100%;
-  background-image: url(../../assets/img/bg_lake.jpg);
+  background-image: url(../../assets/img/sky.jpg);
   background-size: cover;
   background-position: center;
   /* position: relative; */
   overflow: auto;
 }
+.headline {
+   width: 100%;
+   height: 300px;
+   font-size: 40px;
+   line-height: 300px;
+   text-align: center;
+   vertical-align: middle;
+   font-family: arzhu;
+   color: #fff;
+   font-weight: bold;
+}
+.container {
+  width: 92%;
+  margin: 0px auto 0;
+  vertical-align: top;
+}
+.resource_container {
+  width: 75%;
+  display: inline-block;
+}
 .resources_contain {
-    width: 92%;
-    margin: 5px auto 30px;
+    margin: 0 auto 30px;
     font-size: 16px;
     line-height: 30px;
     color: rgba(0,0,0,.6);
-    margin-top: 274px;
     background: #fff;
     padding: 30px 10px;
     border-radius: 5px;
@@ -160,6 +208,7 @@ export default {
     width: 20%;
     min-height: 110px;
     text-decoration: none;
+    transition: all .4s; 
     display: inline-block;
 }
 .collect_item {
@@ -168,6 +217,10 @@ export default {
     border-radius: 5px;
     cursor: pointer;
     box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #F2711C, 0 1px 3px 0 #D4D4D5;
+    transition: all .4s; 
+}
+.collect_item:hover {
+    transform: translateY(-10px);
 }
 .item_content {
     padding: 14px;
