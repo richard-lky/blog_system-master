@@ -25,7 +25,7 @@
                                 <h3 class="comment-list-title">评论</h3>
                                 <div class="comment" v-for="item in articleData" :key="item.id">
                                     <a href="#" class="avatar"><img :src="$baseImgUrl + item.commentImg" alt=""></a>
-                                    <div class="content">
+                                    <div class="content" v-if="item.commentName">
                                         <a href="#" class="author"><span>{{item.commentName}}</span></a>
                                         <div class="metadata"><span>{{item.commentTime}}</span></div>
                                         <div class="text">{{item.commentContent}}</div>
@@ -34,20 +34,20 @@
                                         </div>
                                     </div>
                                     <!-- 子集评论 -->
-                                    <div class="comment-child">
+                                    <div class="comment-child" v-for="child in item.replyList" :key="child.id">
                                         <div class="comment">
-                                            <a href="#" class="avatar"><img :src="$baseImgUrl + item.replyImg" alt=""></a>
+                                            <a href="#" class="avatar"><img :src="$baseImgUrl + child.replyImg" alt=""></a>
                                             <div class="content">
                                                 <a href="#" class="author">
-                                                    <span>{{item.replyName}}</span></a>
-                                                <div class="author-tag" v-if="item.innkeeper == 1">栈主</div>
-                                                <div class="author-tag" v-if="item.innkeeper == 0">游客</div>
+                                                    <span>{{child.replyName}}</span></a>
+                                                <div class="author-tag" v-if="child.innkeeper == 1">栈主</div>
+                                                <div class="author-tag" v-if="child.innkeeper == 0">游客</div>
                                                 <span class="mteal">@ {{item.commentName}}</span>
                                                 
-                                                <div class="metadata"><span>{{item.replyTime}}</span></div>
-                                                <div class="text">{{item.replyContent}}</div>
+                                                <div class="metadata"><span>{{child.replyTime}}</span></div>
+                                                <div class="text">{{child.replyContent}}</div>
                                                 <div class="actions">
-                                                    <a href="#" class="reply"  @click="reply(item.replyName)">回复</a>
+                                                    <a href="#" class="reply"  @click="reply(child.replyName)">回复</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -105,9 +105,9 @@
 import Aside from '../../components/Aside.vue'
 import NavBar from '../../components/NavBar.vue'
 import $ from 'jquery'
-// import {
-//   SelectArticleById,
-// } from "../../network/article";
+import {
+  ShowCommentById,
+} from "../../network/comment";
 
 export default {
     name: "Details",
@@ -125,7 +125,6 @@ export default {
             textarea: '',
             input_info: '',
             placeholder: "请输入评论信息...",
-            articleId: "",
             articleData: [], // 文章列表
             currentPage: 1,
             pageSize: 5,
@@ -133,38 +132,22 @@ export default {
         };
     },
     created() {
-        const that = this;
-        let articleId = parseInt(this.$route.params.articleId);
-        this.articleId = articleId;
-        // SelectArticleById(this.articleId,this.currentPage,this.pageSize).then((res=>{
-        //     console.log(articleId+"+++++"+res.data);
-        //     if (res) {
-        //         // for (let i = 0; i < res.data.length; i++) {
-        //         //   res.data[i].isreturn = 1
-        //         // }
-        //         this.articleData = res.data;
-        //         this.total = res.total;
-        //     } else {
-        //         this.articleData = [];
-        //         this.total = 0;
-        //     }
-        // }));
-
-         this.$axios.get('/comment/showById', {
-            params: {
-            articleId: articleId,
-            page: this.currentPage,
-            rows: this.pageSize
+        console.log(sessionStorage.getItem('articleId'),"++***++");
+        let Id = parseInt(this.$route.params.articleId);
+        if(Id) {
+            sessionStorage.setItem('articleId',Id);console.log(sessionStorage.getItem('articleId'),"++***++");
+        }
+        
+        ShowCommentById(sessionStorage.getItem('articleId'),this.currentPage,this.pageSize).then((res=>{
+            console.log(sessionStorage.getItem('articleId'),"++***++",res);
+            if (res) {
+                this.articleData = res.data;
+                this.total = res.total;
+            } else {
+                this.articleData = [];
+                this.total = 0;
             }
-        })
-        .then(function (response) {
-            console.log(response.data.data);
-            that.articleData = response.data.data;
-            that.total = response.data.total;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+        }));
     },
     methods: {
          reply(name) {

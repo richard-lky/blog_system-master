@@ -9,83 +9,38 @@
         <Aside></Aside>
         <div class="category_container">
           <div class="m_opacity m_title">
-              <div class="m_tag">
+              <div class="m_tag" v-for="item in categoryData" :key="item.id">
                   <div class="m_tag_item">
-                      <a href="#" class="m_tag_name">数据表GV</a>
-                      <div class="m_tag_number">4</div>
-                  </div>
-              </div>
-              <div class="m_tag">
-                  <div class="m_tag_item">
-                      <a href="#" class="m_tag_name">数据表GV</a>
-                      <div class="m_tag_number">4</div>
+                      <a href="#" class="m_tag_name">{{item.categoryName}}</a>
+                      <div class="m_tag_number">{{item.count}}</div>
                   </div>
               </div>
           </div>
           <div class="m_new">
-          <div class="m_new_list">
+          <div class="m_new_list" v-for="item in articleData" :key="item.id">
           <div class="m_new_item">
               <div class="m_new_info">
-              <h1 class="m_new_title"><a class="m_recommend_a" href="#">标题</a> </h1>
-              <p class="m_new_text">正文正文正文正文正文正文正文正文正正文正文
-                  正文正文正文正文正文正文正文正文正文正文正文正文正文
-                  正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文
-                  正文正文正文正文正文正文正文正文正文正文
-                  正文正文正文正文正文
-                  正文正文正文正文
-                  正文正文
-                  正文
-                  
+              <h1 class="m_new_title" @click="handleClick(item.articleId)"><a class="m_recommend_a" href="#">{{item.articleTitle}}</a> </h1>
+              <p class="m_new_text">
+                  {{item.articleSummary}}
               </p>
               <div class="m_publish_info">
                   <div class="m_publish_avarter">
                   <img src="../../assets/logo.png" alt="">
-                  <div class="m_avarter_name"><a class="m_recommend_a" href="#">作者</a></div>
+                  <div class="m_avarter_name"><a class="m_recommend_a" href="#">{{item.aboutName}}</a></div>
                   </div>
-                  <div class="m_publish_time"><li class="el-icon-date"></li>2021</div>
+                  <div class="m_publish_time"><li class="el-icon-date"></li>{{item.createTime}}</div>
                   <span class="m_publish_time"><i class="el-icon-view
-  "></i>222</span>
+  "></i>{{item.views}}</span>
                   <span class="m_publish_time"><i class="el-icon-chat-line-round
-  "></i>111</span>
+  "></i>{{item.commentCount}}</span>
               </div>
-              <div class="m_new_category"><a href="#" class="m_category_a">分类分类分类</a></div>
-                  <div class="tags"><el-tag type="success">标签一</el-tag></div>
+              <div class="m_new_category"><a href="#" class="m_category_a">{{item.categoryName}}</a></div>
+                  <div class="tags"><el-tag type="success">{{item.tagsName}}</el-tag></div>
 
               </div>
-              <div class="m_new_img">
-              <img src="../../assets/logo.png" alt="">
-              </div>
-          </div>
-          </div>
-          <div class="m_new_list">
-          <div class="m_new_item">
-              <div class="m_new_info">
-              <h1 class="m_new_title"><a class="m_recommend_a" href="#">标题</a> </h1>
-              <p class="m_new_text">正文正文正文正文正文正文正文正文正正文正文
-                  正文正文正文正文正文正文正文正文正文正文正文正文正文
-                  正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文正文
-                  正文正文正文正文正文正文正文正文正文正文
-                  正文正文正文正文正文
-                  正文正文正文正文
-                  正文正文
-                  正文
-              </p>
-              <div class="m_publish_info">
-                  <div class="m_publish_avarter">
-                  <img src="../../assets/logo.png" alt="">
-                  <div class="m_avarter_name"><a class="m_recommend_a" href="#">作者</a></div>
-                  </div>
-                  <div class="m_publish_time"><li class="el-icon-date"></li>2021</div>
-                  <span class="m_publish_time"><i class="el-icon-view
-  "></i>222</span>
-                  <span class="m_publish_time"><i class="el-icon-chat-line-round
-  "></i>111</span>
-              </div>
-              <div class="m_new_category"><a href="#" class="m_category_a">分类分类分类</a></div>
-                  <div class="tags"><el-tag type="success">标签一</el-tag></div>
-              </div>
-              <div class="m_new_img">
-              <img src="../../assets/logo.png" alt="">
+              <div class="m_new_img"  @click="handleClick(item.articleId)">
+              <img :src="$baseImgUrl + item.picture" alt="">
               </div>
           </div>
           </div>
@@ -94,7 +49,7 @@
             <el-pagination
               background
               layout="prev, pager, next"
-              :total="1000">
+              :total="total">
             </el-pagination>
           </div>
           </div>
@@ -105,12 +60,63 @@
 <script>
 import Aside from "../../components/Aside.vue"
 import NavBar from '../../components/NavBar.vue'
+import {
+  ArticleShow,
+  showCategoryCount
+} from "../../network/article";
 export default {
   name: 'Category',
   components: {
     NavBar,
     Aside,
   },
+  data() {
+    return {
+      articleData: [], // 文章列表
+      categoryData: [],
+      currentPage: 1,
+      pageSize: 5,
+      total: 8,
+    }
+  },
+  created() {
+    let user = JSON.parse(sessionStorage.getItem("user"));
+    console.log("sessionStorage", sessionStorage.getItem("user"));
+    console.log(user && user.userName, user && user.userId);
+
+    // 分页查询文章
+    ArticleShow(this.currentPage, this.pageSize).then((res) => {
+      console.log(res.data+"----");
+      if (res) {
+        this.articleData = res.data;
+        this.total = res.total;
+      } else {
+        this.articleData = [];
+        this.total = 0;
+      }
+    });
+    //查询文章分类个数
+    showCategoryCount().then((res) => {
+      if (res) {
+        this.categoryData = res.data;
+      } else {
+        this.categoryData = [];
+      }
+    });
+
+  },
+  methods: {
+    handleClick(articleId){
+      console.log("点击的文章"+articleId);
+      this.$router.push({
+        name: "details",
+        params: {
+          articleId: articleId,
+        },
+      });
+    }
+  }
+
 }
 </script>
 <style scoped>

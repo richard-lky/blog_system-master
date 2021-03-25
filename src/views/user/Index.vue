@@ -10,30 +10,14 @@
             <i class="el-icon-star-on m-icon"></i>
             正文</div> -->
           <div class="m-recommend">
-            <div class="m-recommend-item">
-                  <a href="#" class="m-recommend-a">
-                  <img src="../../assets/img/bg_index.jpg" alt="" class="m-img">
-                  <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
+            <template  v-for="(item,index) in articleData">
+              <div class="m-recommend-item" :key="item.id" v-if="index<4">
+                  <a href=" " class="m-recommend-a">
+                  <img :src="$baseImgUrl + item.picture" alt="" class="m-img" @click="handleClick(item.articleId)">
+                  <span class="m-img-title"><span style="padding-left:6px">{{item.articleSummary}}</span></span>
                 </a>
             </div>
-            <div class="m-recommend-item">
-              <a href="#" class="m-recommend-a">
-                <img src="../../assets/logo.png" alt="" class="m-img">
-                <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
-              </a>
-            </div>
-            <div class="m-recommend-item">
-              <a href="#" class="m-recommend-a">
-                <img src="../../assets/img/bg_404.jpg" alt="" class="m-img">
-                <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
-              </a>
-            </div>
-            <div class="m-recommend-item">
-                <a href="#" class="m-recommend-a">
-                  <img src="../../assets/img/bg_404.jpg" alt="" class="m-img">
-                  <span class="m-img-title"><span style="padding-left:6px">案发</span></span>
-                </a>
-              </div>
+            </template>
           </div>
           <div class="m-new-blogs">
             <div :xs="20" :sm="20" class="m-opacity m-title">
@@ -42,14 +26,14 @@
             <div class="m-new-list">
               <div class="m-new-item"  v-for="item in articleData" :key="item.id">
                 <div class="m-new-info">
-                  <h1 class="m-new-title" @click="handleClick(item.articleId)"><a class="m-recommend_title-a" href="#">{{item.articleTitle}}</a> </h1>
+                  <h1 class="m-new-title" @click="handleClick(item.articleId)"><a class="m-recommend_title-a" href=" ">{{item.articleTitle}}</a> </h1>
                   <p class="m-new-text">
                     {{item.articleSummary}}
                   </p>
                   <div class="m-publish-info">
                       <div class="m-publish-avarter">
                       <img :src="$baseImgUrl + item.aboutImg" alt="">
-                      <div class="m-avarter-name"><a class="m-recommend_title-a" href="#">{{item.aboutName}}</a></div>
+                      <div class="m-avarter-name"><a class="m-recommend_title-a" href=" ">{{item.aboutName}}</a></div>
                     </div>
                     <div class="m-publish-time"><i class="el-icon-date m-icon"></i>{{item.createTime}}</div>
                     <span class="m-publish-time"><i class="el-icon-view
@@ -57,7 +41,7 @@
                     <span class="m-publish-time"><i class="el-icon-chat-dot-round
     m-icon"></i>{{item.commentCount}}</span>
                   </div>
-                  <div class="m-new-category"><a href="#" class="m-category-a">{{item.categoryName}}</a></div>
+                  <div class="m-new-category"><a href=" " class="m-category-a">{{item.categoryName}}</a></div>
                   <div class="tags"><el-tag type="success">{{item.tagsName}}</el-tag></div>
                 </div>
                 <div class="m-new-img" @click="handleClick(item.articleId)">
@@ -92,7 +76,7 @@
 import NavBar from '../../components/NavBar.vue'
 import Aside from '../../components/Aside.vue'
 import {
-  SearchArticle,
+  ArticleShow,
 } from "../../network/article";
 export default {
   name: 'Index',
@@ -112,30 +96,10 @@ export default {
     let user = JSON.parse(sessionStorage.getItem("user"));
     console.log("sessionStorage", sessionStorage.getItem("user"));
     console.log(user && user.userName, user && user.userId);
-
-    // this.$axios.get("/article").then(res => {
-    //   console.log(res+"----");
-    //     if (res) {
-    //     // for (let i = 0; i < res.data.length; i++) {
-    //     //   res.data[i].isreturn = 1
-    //     // }
-    //     this.articleData = res.data;
-    //     this.total = res.total;
-    //   } else {
-    //     this.articleData = [];
-    //     this.total = 0;
-    //   }
-    // })
-
-    SearchArticle(this.currentPage, this.pageSize).then((res) => {
-      // TODO
-      // this.articleData = res
-      // this.total = res.total
+    
+    ArticleShow(this.currentPage, this.pageSize).then((res) => {
       console.log(res.data+"----");
       if (res) {
-        // for (let i = 0; i < res.data.length; i++) {
-        //   res.data[i].isreturn = 1
-        // }
         this.articleData = res.data;
         this.total = res.total;
       } else {
@@ -148,8 +112,6 @@ export default {
   methods: {
     handleClick(articleId){
       console.log("点击的文章"+articleId);
-      // this.$router.push("/details/"+articleId);
-      // this.$router.push("/details/");
       this.$router.push({
         name: "details",
         params: {

@@ -18,22 +18,15 @@
                             <li>原创博客、技术博客、游记博客优先</li>
                             <li>需要交换友链，先把本站添加到你的网站中，然后根据下面的格式，给我发email或在留言板给我留言~</li>
                         </div>
-                        <div class="explain_tilte">网站要求</div>
-                        <div class="explain_content">
-                            <li>无色情内容，无政治敏感内容，网站要能长期正常访问</li>
-                            <li>二十篇以上个人原创文章，两个月内有新文章更新</li>
-                            <li>原创博客、技术博客、游记博客优先</li>
-                            <li>需要交换友链，先把本站添加到你的网站中，然后根据下面的格式，给我发email或在留言板给我留言~</li>
-                        </div>
                     </div>
                 </div>
                 <div class="friends_links">
                     <div class="links_contain">
                         <div class="links_content">
-                            <div class="links_item">
+                            <div class="links_item" v-for="item in friendsData" :key="item.id">
                             <a href="#">
-                                <img src="../../assets/img/bg_lake.jpg" alt="">
-                                <div class="item_info">名字</div>
+                                <img :src="$baseImgUrl + item.linksImg" alt="">
+                                <div class="item_info">{{item.linksName}}</div>
                             </a>
                             </div>
                         </div>
@@ -46,12 +39,35 @@
 <script>
 import NavBar from '../../components/NavBar.vue'
 import Aside from '../../components/Aside.vue'
+import {
+    ShowFriendsAll,
+} from '../../network/others'
 export default {
     name: "Friends",
     components: {
         NavBar,
         Aside,
-    }  
+    },
+    data() {
+        return {
+            friendsData: [],
+            currentPage: 1,
+            pageSize: 5,
+            total: 8,
+        }
+    },
+    created() {
+        ShowFriendsAll(this.currentPage, this.pageSize).then((res =>{
+            console.log("666**666",res.data)
+            if(res){
+                this.friendsData = res.data;
+                this.total = res.total;
+            }else {
+                this.friendsData = [],
+                this.total = 0;
+            }
+        }))
+    }
 }
 </script>
 <style scoped>

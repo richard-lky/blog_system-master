@@ -117,7 +117,7 @@ export default {
   },
   mounted() {
     var temp = this.$route.path;
-    console.log(temp);
+    // console.log(temp);
     if(temp == "/player")
       {
         $("#navbar").css('opacity','1')

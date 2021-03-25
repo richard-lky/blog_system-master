@@ -11,16 +11,10 @@
                 <div class="resources_contain">
                     <div class="resources_items">
                         <div class="resources_item">
-                            <div class="resources_items">
+                            <div class="resources_items" v-for="item in categoryData" :key="item.id">
                                 <div class="resources_item">
-                                    <a href="#" class="item_name">数据表GV</a>
-                                    <div class="item_number">4</div>
-                                </div>
-                            </div>
-                            <div class="resources_items">
-                                <div class="resources_item">
-                                    <a href="#" class="item_name">数据表GV</a>
-                                    <div class="item_number">4</div>
+                                    <a href="#" class="item_name">{{item.resourceName}}</a>
+                                    <div class="item_number">{{item.count}}</div>
                                 </div>
                             </div>
                         </div>
@@ -51,6 +45,10 @@
 <script>
 import NavBar from '../../components/NavBar.vue'
 import Aside from '../../components/Aside.vue'
+import {
+    ShowResourceAll,
+    ShowResourceCount
+} from '../../network/others'
 export default {
     name: "Resources",
     components: {
@@ -61,24 +59,29 @@ export default {
         return {
             resourceCategory: 1,
             articleData: [],
+            categoryData: [],
+
         }
     },
     created() {
-        const that = this;
-        this.$axios.get('/resource/showResourceAll', {
-            params: {
-                resourceCategory: this.resourceCategory,
+        ShowResourceAll().then((res => {
+            if (res) {
+                console.log(res.data);
+                this.articleData = res.data;
+            } else {
+                this.articleData = [];
             }
-        })
-        .then(function (response) {
-            console.log(response.data.data);
-            that.articleData = response.data.data;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+        }));
+        ShowResourceCount().then((res => {
+            if (res) {
+                console.log(res.data);
+                this.categoryData = res.data;
+            } else {
+                this.categoryData = [];
+            }
+        }))
     }
-    
+
 }
 </script>
 
@@ -154,7 +157,7 @@ export default {
     color: #00B5AD;
     position: relative;
     left: -2px;
-    padding:2px 14px;
+    padding:1.7px 14px;
     border: #00B5AD solid 1px;
     border-radius: 0 5px 5px 0;
 }

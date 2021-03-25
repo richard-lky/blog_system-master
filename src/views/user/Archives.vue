@@ -38,14 +38,14 @@
                             <ul>
                                 <li>
                                     <div class="bullet_title blue"></div>
-                                    <div class="bullet_headline">文章总览 - {{total}}</div>
+                                    <div class="bullet_headline">文章总数 - {{total}}</div>
                                 </li>
                                 <li v-for="item in articleData" :key="item.id">
                                     <div class="bullet blue"></div>
-                                    <div class="article_item_img"><a href="#"><img :src="$baseImgUrl + item.picture" alt=""></a></div>
+                                    <div class="article_item_img"><a href="#"><img :src="$baseImgUrl + item.picture" alt="" @click="handleClick(item.articleId)"></a></div>
                                     <div class="desc">
                                         <h2><li class="el-icon-date"></li> {{item.createTime}}</h2>
-                                        <h3><a href="#">{{item.articleSummary}}</a></h3>
+                                        <h3 @click="handleClick(item.articleId)"><a href="#">{{item.articleSummary}}</a></h3>
                                     </div>
                                 </li>
                             </ul>
@@ -57,7 +57,7 @@
                     <el-pagination
                         background
                         layout="prev, pager, next"
-                        :total="1000">
+                        :total="total">
                     </el-pagination>
                 </div>
             </div>
@@ -76,6 +76,11 @@ require('echarts/lib/chart/line')
 require('echarts/lib/component/tooltip')   // tooltip组件
 require('echarts/lib/component/title')   //  title组件
 require('echarts/lib/component/legend')  // legend组件
+
+import {
+    ArticleShow,
+    ShowMonthArticleCount
+} from "../../network/article"
 export default {
     name: "Archives",
     components: {
@@ -93,35 +98,16 @@ export default {
         }
     },
     created() {
-        const that = this;
-        this.$axios.get('/article/articleShow', {
-            params: {
-                page: this.currentPage,
-                rows: this.pageSize
+
+        ArticleShow(this.currentPage, this.pageSize).then((res => {
+            if (res) {
+                this.articleData = res.data;
+            // this.monthData = res.data.
+                this.total = res.total;
+            } else {
+               this.articleData = [];
             }
-        })
-        .then(function (response) {
-            // console.log("+++++++"+response.data.data);
-            that.articleData = response.data.data;
-            // that.monthData = response.data.data.
-            that.total = response.data.total;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-        this.$axios.get('/article/showMonthArticleCount')
-        .then(function (response) {
-            console.log("66666",response.data.data);
-            that.monthData = response.data.data.map(that.month);
-            that.articleCount = response.data.data.map(that.count);
-            console.log("+++++++",that.monthData);
-            // that.articleCount = response.data.data.count;
-            // that.monthData = response.data.data.
-            // that.total = response.data.total;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+        }));
     },
     methods: {
     month(num){
@@ -129,6 +115,15 @@ export default {
     },
     count(num){
         return num.count;
+    },
+    handleClick(articleId){
+      console.log("点击的文章"+articleId);
+      this.$router.push({
+        name: "details",
+        params: {
+          articleId: articleId,
+        },
+      });
     },
         //   图表
     drawLine() {
@@ -140,7 +135,7 @@ export default {
         myChart.setOption({
             xAxis: {
                 type: 'category',   // 还有其他的type，可以去官网喵两眼哦
-                data: this.monthData,   // x轴数据
+                data: [],   // x轴数据
                 axisLine: {
                 // 坐标轴轴线相关设置。
                 lineStyle: {
@@ -170,11 +165,39 @@ export default {
             series: [
             {
                 name: '文章篇数：',
-                data: this.articleCount,
+                data: [],
                 type: 'line'
             }
             ]
         });
+
+        ShowMonthArticleCount().then((res => {
+            if (res) {
+                this.monthData = res.data.map(this.month);
+                this.articleCount = res.data.map(this.count);
+                myChart.setOption({
+                    xAxis: {
+                        type: 'category',   // 还有其他的type，可以去官网喵两眼哦
+                        data: this.monthData,   // x轴数据
+                        axisLine: {
+                            // 坐标轴轴线相关设置。
+                            lineStyle: {
+                                color: 'rgba(0,0,0,.6)'
+                            }
+                         }
+                    },
+                    series: [
+                        {
+                            name: '文章篇数：',
+                            data: this.articleCount,
+                            type: 'line'
+                        }
+                    ]
+                })
+            } else {
+               this.articleData = [];
+            }
+        }));
         }
     },
     mounted () {

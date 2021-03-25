@@ -15,12 +15,21 @@
                         prefix-icon="el-icon-user"
                         v-model="input_info">
                     </el-input>
+                    <div class="space"></div>
                     <el-input
                         class="info_input"
                         placeholder="请输入邮箱，不做展示用"
                         prefix-icon="el-icon-message"
                         v-model="input_info">
                     </el-input>
+                    <div class="space"></div>
+                    <el-input
+                        class="info_input"
+                        placeholder="请输入头像地址，非必填"
+                        prefix-icon="el-icon-message"
+                        v-model="input_info">
+                    </el-input>
+                    <div class="space"></div>
                     <el-input
                         class="info_input"
                         placeholder="请输入个人网站地址，非必填"
@@ -28,10 +37,11 @@
                         v-model="input_info">
                     </el-input>
                     <el-input
+                        id="textarea"
                         type="textarea"
                         style="width: 96%"
                         :rows="7"
-                        placeholder="请说点什么吧..."
+                        :placeholder="placeholder"
                         v-model="textarea">
                         </el-input>
                         <el-button type="success" class="m_submit_buttom" ><i class="el-icon-edit"></i>发表</el-button>
@@ -40,59 +50,32 @@
                 <div class="m_comment_list">
                     <div>
                         <h3 class="comment_list_title">留言</h3>
-                        <div class="comment">
-                            <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
+                        <div class="comment" v-for="item in messageData" :key="item.id">
+                            <a href="#" class="avatar"><img :src="$baseImgUrl + item.wordsImg" alt=""></a>
                             <div class="content">
-                                <a href="#" class="author"><span>author</span></a>
-                                <div class="metadata"><span>2021-01-23:59</span></div>
-                                <div class="text">内容</div>
+                                <a href="#" class="author"><span>{{item.wordsName}}</span></a>
+                                <div class="metadata"><span>{{item.wordsTime}}</span></div>
+                                <div class="text">{{item.wordsContent}}</div>
                                 <div class="actions">
-                                    <a href="#" class="reply">回复</a>
+                                    <a href="#" class="reply"  @click="reply(item.wordsName)">回复</a>
                                 </div>
                             </div>
                             <!-- 子集留言 -->
-                            <div class="comment_child">
+                            <div class="comment_child" v-for="child in item.replyList" :key="child.id">
                                 <div class="comment">
-                                    <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
+                                    <a href="#" class="avatar"><img :src="$baseImgUrl + child.replyImg" alt=""></a>
                                     <div class="content">
                                         <a href="#" class="author">
-                                            <span>author</span></a>
-                                        <div class="author_tag">栈主</div>
-                                        <span class="mteal">@ author</span>
+                                            <span>{{child.replyName}}</span></a>
+                                        <div class="author_tag" v-if="child.innkeeper == 1">栈主</div>
+                                        <div class="author_tag" v-if="child.innkeeper == 0">游客</div>
+                                        <!-- <div class="author_tag">栈主</div> -->
+                                        <span class="mteal">@ {{item.wordsName}}</span>
                                         
-                                        <div class="metadata"><span>2021-01-23:59</span></div>
-                                        <div class="text">内容</div>
+                                        <div class="metadata"><span>{{child.replyTime}}</span></div>
+                                        <div class="text">{{child.replyContent}}</div>
                                         <div class="actions">
-                                            <a href="#" class="reply">回复</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="comment">
-                            <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
-                            <div class="content">
-                                <a href="#" class="author"><span>author</span></a>
-                                <div class="metadata"><span>2021-01-23:59</span></div>
-                                <div class="text">内容</div>
-                                <div class="actions">
-                                    <a href="#" class="reply">回复</a>
-                                </div>
-                            </div>
-                            <!-- 子集留言 -->
-                            <div class="comment_child">
-                                <div class="comment">
-                                    <a href="#" class="avatar"><img src="../../assets/logo.png" alt=""></a>
-                                    <div class="content">
-                                        <a href="#" class="author">
-                                            <span>author</span></a>
-                                        <div class="author_tag">栈主</div>
-                                        <span class="mteal">@ author</span>
-                                        
-                                        <div class="metadata"><span>2021-01-23:59</span></div>
-                                        <div class="text">内容</div>
-                                        <div class="actions">
-                                            <a href="#" class="reply">回复</a>
+                                            <a href="#" class="reply"  @click="reply(child.replyName)">回复</a>
                                         </div>
                                     </div>
                                 </div>
@@ -104,7 +87,7 @@
                     <el-pagination
                         background
                         layout="prev, pager, next"
-                        :total="1000">
+                        :total="total">
                     </el-pagination>
                 </div>
                 <br><br>
@@ -116,6 +99,10 @@
 <script>
 import NavBar from '../../components/NavBar.vue'
 import Aside from '../../components/Aside.vue'
+import $ from 'jquery'
+import {
+    ShowWordsAll
+} from '../../network/message'
 export default {
     name: "Friends",
     components: {
@@ -123,11 +110,35 @@ export default {
         Aside,
     },
     data() {
-    return {
-      textarea: '',
-      input_info: ''
-    }
-  }
+        return {
+            textarea: '',
+            input_info: '',
+            placeholder: "请输入留言信息...",
+            messageData: [], // 留言列表
+            currentPage: 1,
+            pageSize: 5,
+            total: 8,
+        }
+    },
+    created() {
+        ShowWordsAll(this.currentPage,this.pageSize).then((res=>{
+            console.log("++***++",res);
+            if (res) {
+                this.messageData = res.data;
+                this.total = res.total;
+            } else {
+                this.messageData = [];
+                this.total = 0;
+            }
+        }));
+    },
+    methods: {
+         reply(name) {
+            $("textarea").focus();
+            this.placeholder = "@"+name;
+        }
+    },
+
 }
 </script>
 
@@ -172,8 +183,12 @@ export default {
     margin-bottom: 60px;
 }
 .info_input {
-    width: 30%;
-    margin: 1.5%;
+    width: 23%;
+    margin: 1.5% 0;
+    display: inline-block;
+}
+.space {
+    width: 1.3%;
     display: inline-block;
 }
 .m_comment_list {

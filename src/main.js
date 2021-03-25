@@ -40,6 +40,9 @@ Vue.prototype.$eventBusiIcon = new Vue()
 Vue.prototype.$moment = moment
 Vue.config.productionTip = false
 
+//定义全局变量
+// Vue.prototype.$articleId = 1;
+
 Vue.prototype.$baseImgUrl = 'http://browser9.qhimg.com/bdm/768_474_0/'
 // Vue.prototype.$activeIndex = 'D:/图片/'
 

@@ -11,16 +11,13 @@
         <div slot="header" class="clearfix">
           <span>最新公告</span>
         </div>
-        <div class="new">{{ getNewNotice.noticeContent }}</div>
+        <div class="new">{{noticeData.noticeContent}}</div>
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
-import {
-  getNewNotice,
-} from "../../network/history";
 // vue文件中引入echarts工具
 let echarts = require('echarts/lib/echarts')
 require('echarts/lib/chart/line')
@@ -28,6 +25,16 @@ require('echarts/lib/chart/line')
 require('echarts/lib/component/tooltip')   // tooltip组件
 require('echarts/lib/component/title')   //  title组件
 require('echarts/lib/component/legend')  // legend组件
+
+import {
+    ShowMonthArticleCount
+} from "../../network/article"
+import {
+    ShowCategoryCount
+} from "../../network/category"
+import {
+    ShowNotice
+} from "../../network/aside"
 export default {
   name: "Home",
   data() {
@@ -35,20 +42,25 @@ export default {
       getNewNotice: {
         noticeContent: "",
       },
-      x_date: ['2021-01','2021-02','2021-03',   // x轴数据
-      '2021-04', '2021-05','2021-06', '2021-07',
-      '2021-08', '2021-09','2021-010', '2021-11','2021-012'
-      ], 
-      date: [1, 4, 6, 1, 7, 0, 13,0,0,0,0,0],  
+      monthData: [],
+      articleCount: [],
       opinion: ["分类1", "分类2"],
       opinionData: [
         { value: 12, name: "分类1", itemStyle: "#1ab394" },
         { value: 18, name: "分类2", itemStyle: "#79d2c0" }
       ],
-      
+      noticeData: [],
     };
   },
   methods: {
+
+     month(num){
+        return num.month;
+    },
+    count(num){
+        return num.count;
+    },
+
     //折线图表
     drawLine() {
         // 基于准备好的dom，初始化echarts实例
@@ -57,7 +69,7 @@ export default {
         myChart.setOption({
             xAxis: {
                 type: 'category',   // 还有其他的type，可以去官网喵两眼哦
-                data: this.x_date,
+                data: [],
                 axisLine: {
                 // 坐标轴轴线相关设置。
                 lineStyle: {
@@ -87,11 +99,38 @@ export default {
             series: [
             {
                 name: '文章篇数：',
-                data: this.date,
+                data: [],
                 type: 'line'
             }
             ]
         });
+        ShowMonthArticleCount().then((res => {
+            if (res) {
+                this.monthData = res.data.map(this.month);
+                this.articleCount = res.data.map(this.count);
+                myChart.setOption({
+                    xAxis: {
+                        type: 'category',   // 还有其他的type，可以去官网喵两眼哦
+                        data: this.monthData,   // x轴数据
+                        axisLine: {
+                            // 坐标轴轴线相关设置。
+                            lineStyle: {
+                                color: 'rgba(0,0,0,.6)'
+                            }
+                         }
+                    },
+                    series: [
+                        {
+                            name: '文章篇数：',
+                            data: this.articleCount,
+                            type: 'line'
+                        }
+                    ]
+                })
+            } else {
+               this.articleData = [];
+            }
+        }));
       },
       //饼图
       drawPie(id) {
@@ -129,6 +168,27 @@ export default {
           }
         ]
       });
+      ShowCategoryCount().then((res =>{
+        console.log("-*-558*-+-*",res);
+        if(res){
+          this.opinionData = res.data;
+          // this.opinion = res.data.map(this.name);
+          console.log("-*-*-+-*",this.opinionData);
+          this.charts.setOption({
+            legend: {
+              bottom: 10,
+              left: "center",
+              data: this.opinionData.name
+            },
+            series: [
+            {
+              data: this.opinionData,
+            }]
+            })
+          }else {
+            this.opinionData = []
+          }
+      }))
     },
     },
     mounted () {
@@ -139,9 +199,9 @@ export default {
     });
   },
   created() {
-    getNewNotice().then((res) => {
+    ShowNotice().then((res) => {
       console.log(res);
-      
+      this.noticeData = res;
       // this.getNewNotice.noticeContent = res.noticeContent;
     });
   },

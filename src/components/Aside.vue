@@ -41,6 +41,12 @@
 </template>
 
 <script>
+import  {
+    ShowNotice,
+    ShowTagsAll,
+    ShowUser,
+    ShowArticleInfo
+} from "../network/aside";
 export default {
     name: "Aside",
     data() {
@@ -55,39 +61,36 @@ export default {
         
     },
     created() {
-        const that = this;
-         this.$axios.get('/notice/showNotice')  //公告数据
-        .then(function (response) {
-            console.log(response.data);
-            that.noticeData = response.data;
-        })
-        .catch(function (error) {
-            console.log(error);
+        ShowNotice().then((res) => {
+            console.log("****",res)
+            if (res) {
+                this.noticeData = res;
+            } else {
+                this.noticeData = [];
+            }
         });
-         this.$axios.get('/tags/showTagsAll')   //标签数据
-        .then(function (response) {
-            console.log(response.data.data);
-            that.tagsData = response.data.data;
+        ShowTagsAll().then((res) => {
+            if (res) {
+                this.tagsData = res.data;
+            } else {
+                this.tagsData = [];
+            }
         })
-        .catch(function (error) {
-            console.log(error);
-        });
-        this.$axios.get('/about/showUser')   //博主信息
-        .then(function (response) {
-            console.log(response.data);
-            that.userInfo = response.data;
+        ShowUser().then((res) => {
+            if (res) {
+                this.userInfo = res;
+            } else {
+                this.userInfo = [];
+            }
         })
-        .catch(function (error) {
-            console.log(error);
-        });
-        this.$axios.get('/article/showArticleInfo')   //文章信息
-        .then(function (response) {
-            console.log("****"+response.data);
-            that.articleInfo = response.data;
+        ShowArticleInfo().then((res) => {
+            if (res) {
+                this.articleInfo = res;
+            } else {
+                this.articleInfo = [];
+            }
         })
-        .catch(function (error) {
-            console.log(error);
-        });
+
     }
 }
 </script>
