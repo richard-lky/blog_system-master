@@ -98,7 +98,7 @@ export default {
     console.log(user && user.userName, user && user.userId);
     
     ArticleShow(this.currentPage, this.pageSize).then((res) => {
-      console.log(res.data+"----");
+      console.log(res.data,"----");
       if (res) {
         this.articleData = res.data;
         this.total = res.total;

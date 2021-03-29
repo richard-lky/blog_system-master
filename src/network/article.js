@@ -28,3 +28,11 @@ export function ShowMonthArticleCount () {
     url: '/article/showMonthArticleCount'
   })
 }
+
+//根据文章ID查询分类
+export function ShowCategory() {
+  return request({
+    url: '/category//showCategoryByArticelId',
+    method: 'get'
+  })
+}

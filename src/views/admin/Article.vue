@@ -12,10 +12,10 @@
             <el-select v-model="formSeletor.sort" placeholder="分类">
               <el-option label="所有" value="所有"></el-option>
               <el-option
-                :label="item.sortName"
-                :value="item.sortName"
-                v-for="item in bookSorts"
-                :key="item.sortId"
+                v-for="item in categoryData"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -51,39 +51,40 @@
       </div>
       <div class="content-body">
         <el-table
-          ref="filterTable"
-          :data="tableData"
+          :data="articleData"
+          stripe
+          highlight-current-row
           style="width: 100%; min-height: 300px;"
         >
           <el-table-column
-            prop="bookName"
+            prop="articleTitle"
             :show-overflow-tooltip="true"
             label="文章标题"
-            fixed
           >
           </el-table-column>
           <el-table-column
-            prop="bookRecord"
+            prop="createTime"
             label="创作日期"
             sortable
             column-key="date"
           >
           </el-table-column>
-          <el-table-column prop="bookSort" label="文章分类"> </el-table-column>
-          <el-table-column prop="bookSort" label="标签分类"> </el-table-column>
-          <el-table-column prop="bookSort" label="是否发布"> </el-table-column>
-          <el-table-column prop="bookSort" label="发布/撤销"> </el-table-column>
-          <el-table-column prop="tag" label="操作" width="160">
+          <el-table-column prop="categoryName" label="文章分类"> </el-table-column>
+          <el-table-column prop="tagsName" label="标签分类"> </el-table-column>
+          <el-table-column label="是否发布"><template slot-scope="scope"> {{scope.row.articleState == true ?'已发布' : '草稿'}} </template> </el-table-column>
+          <el-table-column prop="articleId" label="发布/撤销">
+          <template v-slot="scoped">
+            <el-switch
+              v-model="scoped.row.articleState"
+              active-color="#13ce66">
+            </el-switch>
+          </template>
+          </el-table-column>
+          <el-table-column prop="tag" label="操作" width="195">
             <template slot-scope="scope">
               <el-tag
                 @click="handleClick(scope.row)"
-                type="primary"
-                disable-transitions
-                class="tag-btn"
-                >查看</el-tag>
-              <el-tag
-                @click="handleClick(scope.row)"
-                type="primary"
+                type="success"
                 disable-transitions
                 class="tag-btn"
                 >编辑</el-tag
@@ -165,83 +166,6 @@
             <el-button type="primary" @click="updateBookInfo">确 定</el-button>
           </div>
         </el-dialog>
-        <!-- 添加图书对话框 -->
-        <el-dialog title="书籍资料" :visible.sync="dialogNewBookVisible">
-          <el-form
-            :model="formNewBook"
-            class="demo-form-inline"
-            label-width="60px"
-          >
-            <div class="book-info">
-              <el-form-item label="出版社" :label-width="formLabelWidth">
-                <el-select v-model="formSeletor.pub" placeholder="请输入出版社">
-                  <el-option
-                    :label="item"
-                    :value="item"
-                    v-for="item in bookPubs"
-                    :key="item"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="类别" :label-width="formLabelWidth">
-                <el-select v-model="formSeletor.sort" placeholder="请输入类别">
-                  <el-option
-                    :label="item.sortName"
-                    :value="item.sortName"
-                    v-for="item in bookSorts"
-                    :key="item.sortId"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="作者" :label-width="formLabelWidth">
-                <el-input
-                  v-model="formNewBook.bookAuthor"
-                  placeholder="请输入作者"
-                ></el-input>
-              </el-form-item>
-              <el-form-item label="书名" :label-width="formLabelWidth">
-                <el-input
-                  v-model="formNewBook.bookName"
-                  placeholder="请输入书名"
-                ></el-input>
-              </el-form-item>
-            </div>
-            <div class="add-book-img">
-              <label class="lable-img"
-                ><img
-                  v-if="formNewBook.bookImg"
-                  :src="formNewBook.bookImg"
-                  alt="无法加载图片"
-                  title="点击更换封面"
-                />
-                <li v-else class="el-icon-plus img-icon"></li>
-                <input
-                  type="file"
-                  class="img-input"
-                  name="img"
-                  @change="imgInput"
-                />
-              </label>
-            </div>
-
-            <el-form-item label="简介" :label-width="formLabelWidth">
-              <el-input
-                v-model="formNewBook.bookIntroduce"
-                placeholder="请输入简介"
-              ></el-input>
-            </el-form-item>
-            <!-- <el-form-item label="状态" :label-width="formLabelWidth">
-              <el-select v-model="formInline.isreturn" placeholder="请选择活动区域">
-                <el-option label="未借" value="shanghai"></el-option>
-                <el-option label="已借" value="beijing"></el-option>
-              </el-select>
-            </el-form-item> -->
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogNewBookVisible = false">取 消</el-button>
-            <el-button type="primary" @click="addBook">发 布</el-button>
-          </div>
-        </el-dialog>
       </div>
       <!-- 分页 -->
       <div class="page">
@@ -272,6 +196,11 @@ import {
   updateBook,
   uploadImg,
 } from "../../network/book";
+import {
+  ArticleShow,
+  ShowCategory,
+
+} from '../../network/article'
 export default {
   name: "Article",
   components: {},
@@ -321,18 +250,24 @@ export default {
       },
       formSeletor: {
         // 筛选表单
-        sort: "所有",
-        pub: "所有",
-        status: "所有",
+        sort: "所有"
       },
       formLabelWidth: "70px",
       bookImgUrl: "",
       defualtPic: require("../../assets/img/avatar.png"),
       imageFile: "",
       imgUrl: "",
+
+
+
+      articleData: [],
+      articleState: true,
+      categoryData: [],
+      
     };
   },
   methods: {
+    
     imgInput(even) {
       // this.imageUrl = event.target.value;
       let $target = even.target || even.srcElement;
@@ -520,9 +455,34 @@ export default {
       console.log(res.data, "99999");
     });
     SelectBookSort().then((res) => {
-      this.bookSorts = res.data;
+      this.categoryData = res.data;
       console.log(res.data, "8888");
     });
+
+
+
+    //从这里开始
+    ArticleShow(this.currentPage, this.pageSize).then((res) => {
+      console.log(res,"----");
+      if (res) {
+        this.articleData = res.data;
+        this.total = res.total;
+      } else {
+        this.articleData = [];
+        this.total = 0;
+      }
+    });
+
+    ShowCategory().then((res => {
+    console.log("898989",res.data);
+    if(res){
+      this.categoryData = res.data;
+    } else {
+      this.categoryData = [];
+    }
+
+    }))
+
   },
   mounted() {
     this.$eventBus.$on("eventBusName", (val) => {
@@ -669,4 +629,11 @@ export default {
 .page {
   text-align: center;
 }
+.el-table .warning-row {
+    background: oldlace;
+  }
+
+  .el-table .success-row {
+    background: #f0f9eb;
+  }
 </style>

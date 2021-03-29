@@ -2,52 +2,50 @@
   <div :class="{ 'content-box': true, 'content-collapse': collapse }">
     <div class="content">
       <div class="search">
-        <el-form
-          :inline="true"
-          :model="formInline"
-          class="demo-form-inline"
+        <el-button
+          type="success"
+          class="publish"
           size="small"
+          @click="dialogNoticeVisible = true"
+          >添加新链接</el-button
         >
-          <el-button
-            type="success"
-            class="publish"
-            size="small"
-            @click="dialogNoticeVisible = true"
-            >添加新链接</el-button
-          >
-        </el-form>
       </div>
       <el-table
+          stripe
         :data="tableData"
-        border
         style="width: 100%; min-height: 330px; margin-bottom: 15px"
       >
-        <el-table-column prop="userName" label="序号">
+        <el-table-column type="index" :index="indexMethod" label="序号">
+        </el-table-column>
+        <el-table-column prop="linksId" label="ID">
         </el-table-column>
         <el-table-column
           :show-overflow-tooltip="true"
-          prop="noticeContent"
+          prop="linksName"
           label="友链名称"
         ></el-table-column>
-        <el-table-column prop="userName" label="头像">
+        <el-table-column prop="linksImg" :show-overflow-tooltip="true" label="头像链接">
         </el-table-column>
-        <el-table-column prop="userName" label="描述">
+        <el-table-column prop="linksDescribe" :show-overflow-tooltip="true" label="描述">
         </el-table-column>
-        <el-table-column prop="userName" label="网址">
+        <el-table-column prop="linksUrl" :show-overflow-tooltip="true" label="网址">
         </el-table-column>
         <el-table-column
-          prop="noticeCreatetime"
+          prop="addTime"
           sortable
           label="添加日期"
-          width="140"
+          width="150"
         >
         </el-table-column>
-        <el-table-column prop="userName" label="是否可用">
-          <el-switch
-            v-model="iSswitcha">
-          </el-switch>
-        </el-table-column>
-        <el-table-column label="操作" width="144">
+        <!-- <el-table-column prop="userName" label="是否可用">
+          <template v-slot="scoped">
+            <el-switch
+              v-model="scoped.row.articleState"
+              active-color="#13ce66">
+            </el-switch>
+          </template>
+        </el-table-column> -->
+        <el-table-column label="操作" width="170">
           <template slot-scope="scope">
             <el-tag
               @click="handleClick(scope.row)"
@@ -55,19 +53,43 @@
               class="tag-btn"
               >修 改</el-tag
             >
-            <el-tag @click="cancel(scope.row,scope.$index)" type="info" class="tag-btn"
+            <el-tag @click="deleteLinks(scope.row,scope.$index)" type="info" class="tag-btn"
               >删 除</el-tag
             >
           </template>
         </el-table-column>
       </el-table>
-      <!-- 公告详情对话框 -->
-      <el-dialog title="公告" :visible.sync="dialogFormVisible">
+      <!-- 修改对话框 -->
+      <el-dialog title="修改友链信息" :visible.sync="dialogFormVisible">
         <div class="notice-body">
-          {{ formInline.noticeContent }}
-          <div class="notice-info">
-            发布者: {{ formInline.userId }} {{ formInline.noticeCreatetime }}
-          </div>
+          <label for="name">友链名称:</label>
+          <el-input
+            placeholder="友链名称"
+            v-model="formInline.linksName"
+            clearable>
+          </el-input>
+          <div class="space"></div>
+          <label for="name">头像链接:</label>
+          <el-input
+            placeholder="头像链接"
+            v-model="formInline.linksImg"
+            clearable>
+          </el-input>
+          <div class="space"></div>
+          <label for="name">网址:</label>
+          <el-input
+            placeholder="网址"
+            v-model="formInline.linksUrl"
+            clearable>
+          </el-input>
+          <div class="space"></div>
+          <label for="name">描述:</label>
+          <el-input
+            placeholder="描述"
+            v-model="formInline.linksDescribe"
+            type="textarea"
+            :autosize="{ minRows: 2, maxRows: 4}">
+          </el-input>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button size="small" @click="dialogFormVisible = false"
@@ -76,7 +98,7 @@
           <el-button
             type="primary"
             size="small"
-            @click="dialogFormVisible = false"
+            @click="updateLinks"
             >确 定</el-button
           >
         </div>
@@ -85,17 +107,36 @@
       <el-dialog title="添加链接" :visible.sync="dialogNoticeVisible">
         <div class="notice-body">
           <el-input
-            v-model="publishNotice.noticeContent"
+            placeholder="请输入友链名称"
+            v-model="publishLink.linksName"
+            clearable>
+          </el-input>
+          <div class="space"></div>
+          <el-input
+            placeholder="请输入头像链接"
+            v-model="publishLink.linksImg"
+            clearable>
+          </el-input>
+          <div class="space"></div>
+          <el-input
+            placeholder="请输入网址"
+            v-model="publishLink.linksUrl"
+            clearable>
+          </el-input>
+          <div class="space"></div>
+          <el-input
+            placeholder="请输入描述"
+            v-model="publishLink.linksDescribe"
             type="textarea"
-            rows="5"
-            placeholder="请输入新的链接"
-          ></el-input>
+            :autosize="{ minRows: 2, maxRows: 4}"
+            clearable>
+          </el-input>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button size="small" @click="dialogNoticeVisible = false"
             >取 消</el-button
           >
-          <el-button type="primary" size="small" @click="addNotice"
+          <el-button type="primary" size="small" @click="addLink"
             >确 定</el-button
           >
         </div>
@@ -119,12 +160,12 @@
 
 <script>
 import {
-  SelectNotice,
-  // SelectSelector,
-  SelectNoticeFuzzy,
-  deleteNotice,
-  addNotice,
-} from "../../network/notice";
+  ShowFriendsAll,
+  addLink,
+  updateLinks,
+  deleteLinks,
+
+} from '../../network/others'
 export default {
   name: "Link",
   data() {
@@ -132,14 +173,17 @@ export default {
       collapse: true,
       tagName: "",
       formInline: {
-        noticeContent: "",
-        noticeCreatetime: "",
-        userId: "",
+        linksId: '',
+        linksName: "",
+        linksImg: "",
+        linksDescribe: "",
+        linksUrl: "",
       },
-      publishNotice: {
-        noticeContent: "",
-        noticeCreatetime: "",
-        userName: "",
+      publishLink: {
+        linksName: "",
+        linksImg: "",
+        linksDescribe: "",
+        linksUrl: "",
       },
       tableData: [],
       currentPage: 1,
@@ -155,7 +199,7 @@ export default {
     };
   },
   created() {
-    SelectNotice(this.currentPage, this.pageSize).then((res) => {
+    ShowFriendsAll(this.currentPage, this.pageSize).then((res) => {
       // TODO
       console.log(res);
       this.tableData = res.data;
@@ -163,12 +207,10 @@ export default {
     });
   },
   methods: {
-    isCollapse(val) {
-      this.collapse = val;
-    },
-
-    onSubmit() {
-      console.log("submit!");
+    indexMethod(index) {
+      let curpage = this.currentPage;
+      let limitpage = this.pageSize;
+      return(index + 1) + (curpage - 1)*limitpage;
     },
     handleClick(row) {
       console.log(row);
@@ -179,52 +221,53 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.currentPage = val;
-      if (this.queryModel === 2) {
-        //模糊查询
-        SelectNoticeFuzzy(
-          this.form.noticeContent,
-          this.currentPage,
-          this.pageSize
-        ).then((res) => {
-          // TODO
-          this.tableData = res.data;
-          this.total = res.total;
-        });
-      } /*  else if (this.queryModel === 1) {
-        // 筛选查询
-        SelectSelector(
-          this.formSeletor.sort,
-          this.formSeletor.pub,
-          this.formSeletor.isreturn,
-          this.currentPage,
-          this.pageSize
-        ).then((res) => {
-          // TODO
-          this.tableData = res;
-          this.total = 6;
-        });
-      }  */ else {
-        // 普通查询
-        SelectNotice(this.currentPage, this.pageSize).then((res) => {
-          console.log(res);
-          // TODO
-          this.tableData = res.data;
-          this.total = res.total;
-          // this.total = res.total
-        });
-      }
+      // 普通查询
+      ShowFriendsAll(this.currentPage, this.pageSize).then((res) => {
+        console.log(res);
+        // TODO
+        this.tableData = res.data;
+        this.total = res.total;
+        // this.total = res.total
+      });
     },
-    cancel(row,index) {
-      //注销禁用
-      this.$confirm("此操作将删除这条公告, 是否继续?", "提示", {
+    //添加链接
+    addLink() {
+      addLink(this.publishLink);
+      this.dialogNoticeVisible = false;
+      console.log(this.publishLink);
+      ShowFriendsAll(this.currentPage, this.pageSize).then((res) => {
+        // TODO
+        console.log(res);
+        this.tableData = res.data;
+        this.total = res.total;
+      });
+      this.$message({
+        type: "success",
+        message: "发布成功!",
+      });
+      
+    },
+    updateLinks() {
+      //修改友链信息
+      this.dialogFormVisible = false;
+      // this.formInline.addTime = this.$moment(
+      //   new Date(this.formInline.addTime).getTime()
+      // ).format("YYYY-MM-DD");
+      this.formInline.addTime = null;
+      updateLinks(this.formInline);
+    },
+    deleteLinks(row,index) {
+      //删除
+      this.$confirm("此操作将删除这条友链, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          deleteNotice(row.noticeId);
-          this.tableData.splice(index,1);
-          SelectNotice(this.currentPage, this.pageSize).then((res) => {
+          deleteLinks(row.linksId);
+          console.log("+++",index)
+          this.tableData.splice(index,1);  //移除对应索引位置的数据
+          ShowFriendsAll(this.currentPage, this.pageSize).then((res) => {
             // TODO
             console.log(res);
             this.tableData = res.data;
@@ -243,75 +286,8 @@ export default {
           });
         });
     },
-    onSubmitFuzzy() {
-      //模糊查询
-      this.currentPage = 1;
-      if (this.form.noticeContent) {
-        SelectNoticeFuzzy(this.form.noticeContent).then((res) => {
-          // TODO
-          console.log(res);
-          this.tableData = res.data;
-          this.total = res.total;
-        });
-        this.queryModel = 2;
-      } else {
-        //为空时切换普通查询
-        SelectNotice(this.currentPage, this.pageSize).then((res) => {
-          // TODO
-          this.tableData = res.data;
-          this.total = res.total;
-        });
-        this.queryModel = 0;
-      }
-    },
-    addNotice() {
-      Date.prototype.format = function (fmt) {
-        var o = {
-          "M+": this.getMonth() + 1, //月份
-          "d+": this.getDate(), //日
-          "h+": this.getHours(), //小时
-          "m+": this.getMinutes(), //分
-          "s+": this.getSeconds(), //秒
-          "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-          S: this.getMilliseconds(), //毫秒
-        };
-
-        if (/(y+)/.test(fmt)) {
-          fmt = fmt.replace(
-            RegExp.$1,
-            (this.getFullYear() + "").substr(4 - RegExp.$1.length)
-          );
-        }
-
-        for (var k in o) {
-          if (new RegExp("(" + k + ")").test(fmt)) {
-            fmt = fmt.replace(
-              RegExp.$1,
-              RegExp.$1.length == 1
-                ? o[k]
-                : ("00" + o[k]).substr(("" + o[k]).length)
-            );
-          }
-        }
-
-        return fmt;
-      };
-      this.publishNotice.userId = this.$user.userId;
-      this.publishNotice.userName = this.$user.userName;
-      this.publishNotice.noticeCreatetime = new Date().format("yyyy-MM-dd");
-      addNotice(this.publishNotice);
-      this.dialogNoticeVisible = false;
-      console.log(this.publishNotice);
-      this.$message({
-        type: "success",
-        message: "发布成功!",
-      });
-    },
   },
   mounted() {
-    this.$eventBus.$on("eventBusName", (val) => {
-      this.isCollapse(val);
-    });
     this.$eventBusTag.$on("eventBusName", (val) => {
       console.log(val);
       this.tagName = val;
@@ -353,10 +329,9 @@ export default {
   margin-left: 50px;
 }
 .content-box .content .notice-body {
-  padding: 15px;
+  padding: 0 15px;
   border-radius: 5px;
   font-size: 16px;
-  border: 1px solid #ddd;
 }
 .content-box .content .notice-body .notice-info {
   text-align: right;
@@ -368,5 +343,8 @@ export default {
 }
 .page {
   text-align: center;
+}
+.space {
+  margin-top: 15px;
 }
 </style>

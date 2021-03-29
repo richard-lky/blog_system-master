@@ -27,23 +27,23 @@
         </el-form>
       </div>
       <el-table
+        stripe
         :data="tableData"
-        border
         style="width: 100%; min-height: 330px; margin-bottom: 15px"
       >
-        <el-table-column prop="userName" label="序号"></el-table-column>
+        <el-table-column type="index" :index="indexMethod" label="序号"></el-table-column>
+        <el-table-column prop="noticeId" label="ID"></el-table-column>
         <el-table-column
-          :show-overflow-tooltip="true"
           prop="noticeContent"
           label="公告内容"
         ></el-table-column>
         <el-table-column
-          prop="noticeCreatetime"
+          prop="createTime"
           sortable
           label="上传日期"
         >
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="144">
+        <el-table-column label="操作" width="164">
           <template slot-scope="scope">
             <el-tag
               @click="handleClick(scope.row)"
@@ -51,7 +51,7 @@
               class="tag-btn"
               >查 看</el-tag
             >
-            <el-tag @click="cancel(scope.row,scope.$index)" type="info" class="tag-btn"
+            <el-tag @click="deleteNotice(scope.row,scope.$index)" type="info" class="tag-btn"
               >删 除</el-tag
             >
           </template>
@@ -61,9 +61,6 @@
       <el-dialog title="公告" :visible.sync="dialogFormVisible">
         <div class="notice-body">
           {{ formInline.noticeContent }}
-          <div class="notice-info">
-            发布者: {{ formInline.userId }} {{ formInline.noticeCreatetime }}
-          </div>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button size="small" @click="dialogFormVisible = false"
@@ -91,7 +88,7 @@
           <el-button size="small" @click="dialogNoticeVisible = false"
             >取 消</el-button
           >
-          <el-button type="primary" size="small" @click="addNotice"
+          <el-button type="primary" size="small" @click="AddNotice"
             >确 定</el-button
           >
         </div>
@@ -115,12 +112,11 @@
 
 <script>
 import {
-  SelectNotice,
-  // SelectSelector,
-  SelectNoticeFuzzy,
-  deleteNotice,
-  addNotice,
-} from "../../network/notice";
+  ShowNotice,
+  AddNotice,
+  showNoticeByContent,
+  deleteNotice
+} from '../../network/others'
 export default {
   name: "Notice",
   data() {
@@ -129,13 +125,11 @@ export default {
       tagName: "",
       formInline: {
         noticeContent: "",
-        noticeCreatetime: "",
         userId: "",
       },
       publishNotice: {
         noticeContent: "",
-        noticeCreatetime: "",
-        userName: "",
+        noticeId: "",
       },
       tableData: [],
       currentPage: 1,
@@ -150,7 +144,8 @@ export default {
     };
   },
   created() {
-    SelectNotice(this.currentPage, this.pageSize).then((res) => {
+    //查询所有公告
+    ShowNotice(this.currentPage, this.pageSize).then((res) => {
       // TODO
       console.log(res);
       this.tableData = res.data;
@@ -158,12 +153,10 @@ export default {
     });
   },
   methods: {
-    isCollapse(val) {
-      this.collapse = val;
-    },
-
-    onSubmit() {
-      console.log("submit!");
+    indexMethod(index) {
+      let curpage = this.currentPage;
+      let limitpage = this.pageSize;
+      return(index + 1) + (curpage - 1)*limitpage;
     },
     handleClick(row) {
       console.log(row);
@@ -176,7 +169,7 @@ export default {
       this.currentPage = val;
       if (this.queryModel === 2) {
         //模糊查询
-        SelectNoticeFuzzy(
+        showNoticeByContent(
           this.form.noticeContent,
           this.currentPage,
           this.pageSize
@@ -200,16 +193,15 @@ export default {
         });
       }  */ else {
         // 普通查询
-        SelectNotice(this.currentPage, this.pageSize).then((res) => {
-          console.log(res);
-          // TODO
-          this.tableData = res.data;
-          this.total = res.total;
-          // this.total = res.total
-        });
+        ShowNotice(this.currentPage, this.pageSize).then((res) => {
+        // TODO
+        console.log(res);
+        this.tableData = res.data;
+        this.total = res.total;
+      });
       }
     },
-    cancel(row,index) {
+    deleteNotice(row,index) {
       //注销禁用
       this.$confirm("此操作将删除这条公告, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -218,8 +210,9 @@ export default {
       })
         .then(() => {
           deleteNotice(row.noticeId);
-          this.tableData.splice(index,1);
-          SelectNotice(this.currentPage, this.pageSize).then((res) => {
+          console.log("+++",index)
+          this.tableData.splice(index,1);  //移除对应索引位置的数据
+          ShowNotice(this.currentPage, this.pageSize).then((res) => {
             // TODO
             console.log(res);
             this.tableData = res.data;
@@ -242,16 +235,20 @@ export default {
       //模糊查询
       this.currentPage = 1;
       if (this.form.noticeContent) {
-        SelectNoticeFuzzy(this.form.noticeContent).then((res) => {
+        showNoticeByContent(
+          this.form.noticeContent,
+          this.currentPage,
+          this.pageSize
+        ).then((res) => {
           // TODO
-          console.log(res);
+          console.log("6262*",res);
           this.tableData = res.data;
           this.total = res.total;
         });
         this.queryModel = 2;
       } else {
         //为空时切换普通查询
-        SelectNotice(this.currentPage, this.pageSize).then((res) => {
+        ShowNotice(this.currentPage, this.pageSize).then((res) => {
           // TODO
           this.tableData = res.data;
           this.total = res.total;
@@ -259,54 +256,25 @@ export default {
         this.queryModel = 0;
       }
     },
-    addNotice() {
-      Date.prototype.format = function (fmt) {
-        var o = {
-          "M+": this.getMonth() + 1, //月份
-          "d+": this.getDate(), //日
-          "h+": this.getHours(), //小时
-          "m+": this.getMinutes(), //分
-          "s+": this.getSeconds(), //秒
-          "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-          S: this.getMilliseconds(), //毫秒
-        };
-
-        if (/(y+)/.test(fmt)) {
-          fmt = fmt.replace(
-            RegExp.$1,
-            (this.getFullYear() + "").substr(4 - RegExp.$1.length)
-          );
-        }
-
-        for (var k in o) {
-          if (new RegExp("(" + k + ")").test(fmt)) {
-            fmt = fmt.replace(
-              RegExp.$1,
-              RegExp.$1.length == 1
-                ? o[k]
-                : ("00" + o[k]).substr(("" + o[k]).length)
-            );
-          }
-        }
-
-        return fmt;
-      };
-      this.publishNotice.userId = this.$user.userId;
-      this.publishNotice.userName = this.$user.userName;
-      this.publishNotice.noticeCreatetime = new Date().format("yyyy-MM-dd");
-      addNotice(this.publishNotice);
+    //添加公告
+    AddNotice() {
+      AddNotice(this.publishNotice);
       this.dialogNoticeVisible = false;
       console.log(this.publishNotice);
       this.$message({
         type: "success",
         message: "发布成功!",
       });
+      //添加后更新数据
+      ShowNotice(this.currentPage, this.pageSize).then((res) => {
+      // TODO
+      console.log(res);
+      this.tableData = res.data;
+      this.total = res.total;
+    });
     },
   },
   mounted() {
-    this.$eventBus.$on("eventBusName", (val) => {
-      this.isCollapse(val);
-    });
     this.$eventBusTag.$on("eventBusName", (val) => {
       console.log(val);
       this.tagName = val;
@@ -347,7 +315,7 @@ export default {
   margin-left: 50px;
 }
 .content-box .content .notice-body {
-  padding: 15px;
+  padding: 30px 15px;
   border-radius: 5px;
   font-size: 16px;
   border: 1px solid #ddd;

@@ -43,7 +43,7 @@
               type="success"
               class="publish"
               size="small"
-              @click="dialogNewBookVisible = true"
+              @click="dialogNewResourceVisible = true"
               >添加资源</el-button
             >
           </el-form-item>
@@ -56,29 +56,42 @@
           style="width: 100%; min-height: 300px;"
         >
           <el-table-column
-            prop="bookName"
-            :show-overflow-tooltip="true"
+            type="index"
+            :index="indexMethod"
             label="序号"
           >
           </el-table-column>
           <el-table-column
-            prop="bookName"
+            prop="resourceId"
+            :show-overflow-tooltip="true"
+            label="ID"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="resourceName"
             :show-overflow-tooltip="true"
             label="名称"
           >
           </el-table-column>
           <el-table-column
-            prop="bookPub"
+            prop="resourceCategory"
             :show-overflow-tooltip="true"
             label="类别"
           >
           </el-table-column>
-          <el-table-column prop="bookSort" label="简介"> </el-table-column>
           <el-table-column
-            prop="bookRecord"
+            prop="resourceImg"
+            :show-overflow-tooltip="true"
+            label="照片地址"
+          >
+          </el-table-column>
+          <el-table-column prop="resourceDescribe" label="简介"> </el-table-column>
+          <el-table-column
+            prop="createTime"
             label="添加日期"
             sortable
             column-key="date"
+            width="170"
           >
           </el-table-column>
           <el-table-column prop="tag" label="操作" width="160">
@@ -90,7 +103,7 @@
                 class="tag-btn"
                 >编 辑</el-tag
               >
-              <el-tag @click="cancel(scope.row,scope.$index)" type="info" class="tag-btn"
+              <el-tag @click="deleteResource(scope.row,scope.$index)" type="info" class="tag-btn"
                 >删 除</el-tag
               >
             </template>
@@ -98,150 +111,76 @@
         </el-table>
         <!-- 修改资料对话框 -->
         <el-dialog title="书籍资料" :visible.sync="dialogFormVisible">
-          <el-form
-            :model="formInline"
-            class="demo-form-inline"
-            label-width="60px"
-          >
-            <div class="book-info">
-              <el-form-item label="出版社" :label-width="formLabelWidth">
-                <el-select v-model="formInline.bookPub" placeholder="出版社">
-                  <el-option
-                    :label="item"
-                    :value="item"
-                    v-for="item in bookPubs"
-                    :key="item"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="类别" :label-width="formLabelWidth">
-                <el-select v-model="formInline.bookSort" placeholder="类别">
-                  <el-option
-                    :label="item.sortName"
-                    :value="item.sortName"
-                    v-for="item in bookSorts"
-                    :key="item.sortId"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="作者" :label-width="formLabelWidth">
-                <el-input v-model="formInline.bookAuthor"></el-input>
-              </el-form-item>
-              <el-form-item label="书名" :label-width="formLabelWidth">
-                <el-input
-                  v-model="formInline.bookName"
-                  placeholder="书名"
-                ></el-input>
-              </el-form-item>
-            </div>
-            <div class="book-img">
-              <label class="lable-img"
-                ><img
-                  :src="this.$baseImgUrl + formInline.bookImg"
-                  alt="无法加载图片"
-                  @error="defualtImg"
-                />
-              </label>
-            </div>
-
-            <el-form-item label="上架时间" :label-width="formLabelWidth">
-              <el-date-picker
-                v-model="formInline.bookRecord"
-                type="date"
-                placeholder="选择日期"
-              >
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="简介" :label-width="formLabelWidth">
-              <el-input v-model="formInline.bookIntroduce"></el-input>
-            </el-form-item>
-            <!-- <el-form-item label="状态" :label-width="formLabelWidth">
-              <el-select v-model="formInline.isreturn" placeholder="请选择活动区域">
-                <el-option label="未借" value="shanghai"></el-option>
-                <el-option label="已借" value="beijing"></el-option>
-              </el-select>
-            </el-form-item> -->
-          </el-form>
+          <div class="notice-body">
+            <label for="name">名称:</label>
+            <el-input
+              placeholder="名称"
+              v-model="formInline.resourceName"
+              clearable>
+            </el-input>
+            <div class="space"></div>
+            <label for="name">类别:</label>
+            <el-input
+              placeholder="类别"
+              v-model="formInline.resourceCategory"
+              clearable>
+            </el-input>
+            <div class="space"></div>
+            <label for="name">照片地址:</label>
+            <el-input
+              placeholder="照片地址"
+              v-model="formInline.resourceImg"
+              clearable>
+            </el-input>
+            <div class="space"></div>
+            <label for="name">简介:</label>
+            <el-input
+              placeholder="简介"
+              v-model="formInline.resourceDescribe"
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4}">
+            </el-input>
+          </div>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="updateBookInfo">确 定</el-button>
+            <el-button type="primary" @click="updateResource">确 定</el-button>
           </div>
         </el-dialog>
         <!-- 添加图书对话框 -->
-        <el-dialog title="书籍资料" :visible.sync="dialogNewBookVisible">
-          <el-form
-            :model="formNewBook"
-            class="demo-form-inline"
-            label-width="60px"
-          >
-            <div class="book-info">
-              <el-form-item label="出版社" :label-width="formLabelWidth">
-                <el-select v-model="formSeletor.pub" placeholder="请输入出版社">
-                  <el-option
-                    :label="item"
-                    :value="item"
-                    v-for="item in bookPubs"
-                    :key="item"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="类别" :label-width="formLabelWidth">
-                <el-select v-model="formSeletor.sort" placeholder="请输入类别">
-                  <el-option
-                    :label="item.sortName"
-                    :value="item.sortName"
-                    v-for="item in bookSorts"
-                    :key="item.sortId"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="作者" :label-width="formLabelWidth">
-                <el-input
-                  v-model="formNewBook.bookAuthor"
-                  placeholder="请输入作者"
-                ></el-input>
-              </el-form-item>
-              <el-form-item label="书名" :label-width="formLabelWidth">
-                <el-input
-                  v-model="formNewBook.bookName"
-                  placeholder="请输入书名"
-                ></el-input>
-              </el-form-item>
-            </div>
-            <div class="add-book-img">
-              <label class="lable-img"
-                ><img
-                  v-if="formNewBook.bookImg"
-                  :src="formNewBook.bookImg"
-                  alt="无法加载图片"
-                  title="点击更换封面"
-                />
-                <li v-else class="el-icon-plus img-icon"></li>
-                <input
-                  type="file"
-                  class="img-input"
-                  name="img"
-                  @change="imgInput"
-                />
-              </label>
-            </div>
-
-            <el-form-item label="简介" :label-width="formLabelWidth">
-              <el-input
-                v-model="formNewBook.bookIntroduce"
-                placeholder="请输入简介"
-              ></el-input>
-            </el-form-item>
-            <!-- <el-form-item label="状态" :label-width="formLabelWidth">
-              <el-select v-model="formInline.isreturn" placeholder="请选择活动区域">
-                <el-option label="未借" value="shanghai"></el-option>
-                <el-option label="已借" value="beijing"></el-option>
-              </el-select>
-            </el-form-item> -->
-          </el-form>
+        <el-dialog title="书籍资料" :visible.sync="dialogNewResourceVisible">
+           <div class="notice-body">
+            <label for="name">名称:</label>
+            <el-input
+              placeholder="名称"
+              v-model="publishResource.resourceName"
+              clearable>
+            </el-input>
+            <div class="space"></div>
+            <label for="name">类别:</label>
+            <el-input
+              placeholder="类别"
+              v-model="publishResource.resourceCategory"
+              clearable>
+            </el-input>
+            <div class="space"></div>
+            <label for="name">照片地址:</label>
+            <el-input
+              placeholder="照片地址"
+              v-model="publishResource.resourceImg"
+              clearable>
+            </el-input>
+            <div class="space"></div>
+            <label for="name">简介:</label>
+            <el-input
+              placeholder="简介"
+              v-model="publishResource.resourceDescribe"
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4}">
+            </el-input>
+          </div>
           <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogNewBookVisible = false">取 消</el-button>
-            <el-button type="primary" @click="addBook">发 布</el-button>
+            <el-button @click="dialogNewResourceVisible = false">取 消</el-button>
+            <el-button type="primary" @click="addResource">发 布</el-button>
           </div>
         </el-dialog>
       </div>
@@ -264,16 +203,17 @@
 
 <script>
 import {
-  SelectBook,
   SelectBookPub,
   SelectBookSort,
   SelectSelector,
   SelectFuzzy,
-  DeleteBook,
-  saveBook,
-  updateBook,
-  uploadImg,
 } from "../../network/book";
+import {
+  ShowResourceAll,
+  addResource,
+  updateResource,
+  deleteResource
+} from '../../network/others.js'
 export default {
   name: "Knowledge",
   components: {},
@@ -284,34 +224,26 @@ export default {
       icon: "",
       formInline: {
         // 书籍详情模态框
-        id: "",
-        bookId: "",
-        bookName: "",
-        bookAuthor: "",
-        bookPub: "",
-        bookSort: "",
-        bookRecord: "",
-        bookIntroduce: "",
-        bookImg: require("../../assets/img/avatar.png"),
-        isreturn: 0,
+        resourceId: "",
+        resourceCategory: "",
+        resourceDescribe: "",
+        resourceImg: "",
+        resourceName: ""
       },
-      formNewBook: {
-        // 添加书籍模态框
-        bookId: "",
-        bookName: "",
-        bookAuthor: "",
-        bookPub: "",
-        bookSort: "武侠",
-        bookIntroduce: "",
-        bookImg: "",
-        file: "",
+      publishResource: {
+        // 添加资源模态框
+        resourceId: "",
+        resourceCategory: "",
+        resourceDescribe: "",
+        resourceImg: "",
+        resourceName: ""
       },
       tableData: [], //书籍列表
 
       currentPage: 1,
       pageSize: 5,
       dialogFormVisible: false,
-      dialogNewBookVisible: false,
+      dialogNewResourceVisible: false,
       formInlineIsreturn: "0",
       total: 0,
       bookSorts: [],
@@ -335,6 +267,11 @@ export default {
     };
   },
   methods: {
+    indexMethod(index) {
+      let curpage = this.currentPage;
+      let limitpage = this.pageSize;
+      return(index + 1) + (curpage - 1)*limitpage;
+    },
     imgInput(even) {
       // this.imageUrl = event.target.value;
       let $target = even.target || even.srcElement;
@@ -396,12 +333,11 @@ export default {
         });
       } else {
         // 普通查询
-        SelectBook(this.currentPage, this.pageSize).then((res) => {
-          console.log(res);
+        ShowResourceAll(this.currentPage, this.pageSize).then((res) => {
           // TODO
           this.tableData = res.data;
+          console.log(res.data, "*-*-*-*");
           this.total = res.total;
-          // this.total = res.total
         });
       }
     },
@@ -423,10 +359,10 @@ export default {
         this.queryModel = 2;
       } else {
         //为空时切换普通查询
-        SelectBook(this.currentPage, this.pageSize).then((res) => {
-          console.log(res);
+        ShowResourceAll(this.currentPage, this.pageSize).then((res) => {
           // TODO
           this.tableData = res.data;
+          console.log(res.data, "*-*-*-*");
           this.total = res.total;
         });
         this.queryModel = 0;
@@ -448,26 +384,54 @@ export default {
       console.log(this.formSeletor);
       this.queryModel = 1;
     },
-    cancel(row,index) {
-      //删除书籍
-      this.$confirm("此操作将删除这本书籍数据, 是否继续?", "提示", {
+    //添加
+    addResource() {
+      addResource(this.publishResource);
+      this.dialogNewResourceVisible = false;
+      console.log(this.publishResource);
+      ShowResourceAll(this.currentPage, this.pageSize).then((res) => {
+        // TODO
+        console.log(res);
+        this.tableData = res.data;
+        this.total = res.total;
+      });
+      this.$message({
+        type: "success",
+        message: "发布成功!",
+      });
+      
+    },
+    updateResource() {
+      //修改
+      this.dialogFormVisible = false;
+      // this.formInline.addTime = this.$moment(
+      //   new Date(this.formInline.addTime).getTime()
+      // ).format("YYYY-MM-DD");
+      this.formInline.createTime = null;
+      updateResource(this.formInline);
+    },
+    deleteResource(row,index) {
+      //删除
+      this.$confirm("此操作将删除这条友链, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          DeleteBook(row.bookId);
-          this.tableData.splice(index,1);
-          SelectBook(this.currentPage, this.pageSize).then((res) => {
+          deleteResource(row.resourceId);
+          console.log("+++",index)
+          this.tableData.splice(index,1);  //移除对应索引位置的数据
+          ShowResourceAll(this.currentPage, this.pageSize).then((res) => {
             // TODO
+            console.log(res);
             this.tableData = res.data;
-            console.log(res.data, "*-*-*-*");
             this.total = res.total;
           });
           this.$message({
             type: "success",
             message: "删除成功!",
           });
+          
         })
         .catch(() => {
           this.$message({
@@ -476,42 +440,9 @@ export default {
           });
         });
     },
-    addBook() {
-      this.dialogNewBookVisible = false;
-      this.formNewBook.bookSort = this.formSeletor.sort;
-      this.formNewBook.bookPub = this.formSeletor.pub;
-      console.log(this.formNewBook, "5***4");
-      this.formNewBook.bookImg = "";
-      let file = new FormData(); // 创建form对象
-      file.append("file", this.imageFile); // 通过append向form对象添加数据
-      // let param = new FormData(); // 创建form对象
-      // param.append("bookAuthor", this.formNewBook.bookAuthor);
-      // param.append("bookIntroduc", this.formNewBook.bookIntroduc);
-      // param.append("bookName", this.formNewBook.bookName);
-      // param.append("bookPub", this.formNewBook.bookPub);
-      // param.append("bookSort", this.formNewBook.bookSort);
-      // console.log(param.get("file")); // FormData私有类对象，访问不到，可以通过get判断值是否传进去
-      uploadImg(file);
-      console.log(file, "5---4");
-      saveBook(this.formNewBook);
-      console.log(this.formNewBook, "5***4");
-      // console.log(param, "998");
-      this.$message({
-        type: "success",
-        message: "发布成功!",
-      });
-    },
-    updateBookInfo() {
-      //修改图书信息
-      this.dialogFormVisible = false;
-      this.formInline.bookRecord = this.$moment(
-        new Date(this.formInline.bookRecord).getTime()
-      ).format("YYYY-MM-DD");
-      updateBook(this.formInline);
-    },
   },
   created() {
-    SelectBook(this.currentPage, this.pageSize).then((res) => {
+    ShowResourceAll(this.currentPage, this.pageSize).then((res) => {
       // TODO
       this.tableData = res.data;
       console.log(res.data, "*-*-*-*");
@@ -665,5 +596,17 @@ export default {
 }
 .page {
   text-align: center;
+}
+.content-box .content .notice-body {
+  padding: 0 15px;
+  border-radius: 5px;
+  font-size: 16px;
+}
+.content-box .content .notice-body .notice-info {
+  text-align: right;
+  margin: 10px 15px 0 0;
+}
+.space {
+  margin-top: 15px;
 }
 </style>
