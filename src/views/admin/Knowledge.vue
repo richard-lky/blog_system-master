@@ -9,13 +9,13 @@
           size="small"
         >
           <el-form-item label="分类">
-            <el-select v-model="formSeletor.sort" placeholder="分类">
+            <el-select v-model="formSeletor.status" placeholder="分类">
               <el-option label="所有" value="所有"></el-option>
               <el-option
-                :label="item.sortName"
-                :value="item.sortName"
-                v-for="item in bookSorts"
-                :key="item.sortId"
+                :label="item.resourceCategory"
+                :value="item.resourceCategory"
+                v-for="item in categoryData"
+                :key="item.id"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -203,16 +203,16 @@
 
 <script>
 import {
-  SelectBookPub,
   SelectBookSort,
-  SelectSelector,
   SelectFuzzy,
 } from "../../network/book";
 import {
   ShowResourceAll,
   addResource,
   updateResource,
-  deleteResource
+  deleteResource,
+  ShowResourceCategory,
+  ShowResourceByCategory
 } from '../../network/others.js'
 export default {
   name: "Knowledge",
@@ -247,7 +247,7 @@ export default {
       formInlineIsreturn: "0",
       total: 0,
       bookSorts: [],
-      bookPubs: [],
+      categoryData: [],
       queryModel: 0, // 当前查询状态，用户分页切换，分页查询0， 筛选查询1， 模糊查询2
       form: {
         // 模糊查询表单
@@ -255,8 +255,6 @@ export default {
       },
       formSeletor: {
         // 筛选表单
-        sort: "所有",
-        pub: "所有",
         status: "所有",
       },
       formLabelWidth: "70px",
@@ -320,10 +318,9 @@ export default {
         );
       } else if (this.queryModel === 1) {
         // 筛选查询
-        SelectSelector(
-          this.formSeletor.sort,
-          this.formSeletor.pub,
+        ShowResourceByCategory(
           "所有",
+          this.formSeletor.status,
           this.currentPage,
           this.pageSize
         ).then((res) => {
@@ -372,10 +369,9 @@ export default {
       //筛选查询
 
       this.currentPage = 1;
-      SelectSelector(
-        this.formSeletor.sort,
-        this.formSeletor.pub,
-        this.formSeletor.status
+      console.log(this.formSeletor.status,"985959848**--")
+      ShowResourceByCategory(
+        this.formSeletor.status,this.currentPage, this.pageSize
       ).then((res) => {
         // TODO
         this.tableData = res.data;
@@ -448,8 +444,8 @@ export default {
       console.log(res.data, "*-*-*-*");
       this.total = res.total;
     });
-    SelectBookPub().then((res) => {
-      this.bookPubs = res.data;
+    ShowResourceCategory().then((res) => {
+      this.categoryData = res.data;
       console.log(res.data, "99999");
     });
     SelectBookSort().then((res) => {
