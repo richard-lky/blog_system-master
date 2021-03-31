@@ -85,7 +85,7 @@
             label="照片地址"
           >
           </el-table-column>
-          <el-table-column prop="resourceDescribe" label="简介"> </el-table-column>
+          <el-table-column prop="resourceDescribe" :show-overflow-tooltip="true" label="简介"> </el-table-column>
           <el-table-column
             prop="createTime"
             label="添加日期"
@@ -319,7 +319,6 @@ export default {
       } else if (this.queryModel === 1) {
         // 筛选查询
         ShowResourceByCategory(
-          "所有",
           this.formSeletor.status,
           this.currentPage,
           this.pageSize
@@ -368,7 +367,6 @@ export default {
     onSubmitSeletor() {
       //筛选查询
 
-      this.currentPage = 1;
       console.log(this.formSeletor.status,"985959848**--")
       ShowResourceByCategory(
         this.formSeletor.status,this.currentPage, this.pageSize

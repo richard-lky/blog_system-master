@@ -206,13 +206,12 @@ export function ShowResourceCategory() {
 }
 
 //根据资源分类查询信息
-export function ShowResourceByCategory(category = 0,resourceCategory,page = 1,rows = 5) {
+export function ShowResourceByCategory(resourceCategory,page = 1,rows = 5) {
   console.log(resourceCategory)
   return request({
     method: 'get',
     url: 'resource/showResourceByCategory',
     params: {
-      category: category,
       resourceCategory: resourceCategory,
       page: page,
       rows: rows
