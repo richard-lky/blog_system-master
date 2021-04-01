@@ -22,8 +22,13 @@ export function ShowUser () {
   })
 }
  //文章信息
-export function ShowArticleInfo () {
+export function ShowArticleInfo (page=1, rows=10) {
   return request({
-    url: '/article/showArticleInfo'
+    url: '/article/showArticleInfo',
+    method: 'get',
+    params: {
+      page: page,
+      rows: rows
+    }
   })
 }

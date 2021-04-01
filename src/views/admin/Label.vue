@@ -27,13 +27,19 @@
         </el-form>
       </div>
       <el-table
+          stripe
         :data="tableData"
-        border
         style="width: 100%; min-height: 330px; margin-bottom: 15px"
       >
+          <el-table-column
+            type="index"
+            :index="indexMethod"
+            label="序号"
+          >
+          </el-table-column>
          <el-table-column
           prop="noticeCreatetime"
-          label="序号"
+          label="标签ID"
         >
         </el-table-column>
         <el-table-column
@@ -125,6 +131,10 @@ import {
   deleteNotice,
   addNotice,
 } from "../../network/notice";
+import {
+  ShowTagsAll,
+
+} from '../../network/aside.js'
 export default {
   name: "Lebel",
   data() {
@@ -154,7 +164,7 @@ export default {
     };
   },
   created() {
-    SelectNotice(this.currentPage, this.pageSize).then((res) => {
+    ShowTagsAll(this.currentPage, this.pageSize).then((res) => {
       // TODO
       console.log(res);
       this.tableData = res.data;
@@ -165,10 +175,11 @@ export default {
     isCollapse(val) {
       this.collapse = val;
     },
-
-    onSubmit() {
-      console.log("submit!");
-    },
+    indexMethod(index) {
+        let curpage = this.currentPage;
+        let limitpage = this.pageSize;
+        return(index + 1) + (curpage - 1)*limitpage;
+      },
     handleClick(row) {
       console.log(row);
       this.dialogFormVisible = true;

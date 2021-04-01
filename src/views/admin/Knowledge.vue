@@ -33,7 +33,7 @@
         >
           <el-form-item>
             <el-input
-              v-model="form.bookName"
+              v-model="form.resourceName"
               placeholder="输入资源名字，宁少字，不多字"
             ></el-input>
           </el-form-item>
@@ -203,16 +203,13 @@
 
 <script>
 import {
-  SelectBookSort,
-  SelectFuzzy,
-} from "../../network/book";
-import {
   ShowResourceAll,
   addResource,
   updateResource,
   deleteResource,
   ShowResourceCategory,
-  ShowResourceByCategory
+  ShowResourceByCategory,
+  ShowResourceByLike
 } from '../../network/others.js'
 export default {
   name: "Knowledge",
@@ -223,7 +220,7 @@ export default {
       tagName: "",
       icon: "",
       formInline: {
-        // 书籍详情模态框
+        // 资源详情模态框
         resourceId: "",
         resourceCategory: "",
         resourceDescribe: "",
@@ -238,30 +235,22 @@ export default {
         resourceImg: "",
         resourceName: ""
       },
-      tableData: [], //书籍列表
-
+      tableData: [], //资源列表
       currentPage: 1,
       pageSize: 5,
       dialogFormVisible: false,
       dialogNewResourceVisible: false,
-      formInlineIsreturn: "0",
       total: 0,
-      bookSorts: [],
       categoryData: [],
       queryModel: 0, // 当前查询状态，用户分页切换，分页查询0， 筛选查询1， 模糊查询2
       form: {
         // 模糊查询表单
-        bookName: "",
+        resourceName: "",
       },
       formSeletor: {
         // 筛选表单
         status: "所有",
       },
-      formLabelWidth: "70px",
-      bookImgUrl: "",
-      defualtPic: require("../../assets/img/avatar.png"),
-      imageFile: "",
-      imgUrl: "",
     };
   },
   methods: {
@@ -270,45 +259,15 @@ export default {
       let limitpage = this.pageSize;
       return(index + 1) + (curpage - 1)*limitpage;
     },
-    imgInput(even) {
-      // this.imageUrl = event.target.value;
-      let $target = even.target || even.srcElement;
-      let file = $target.files[0];
-      console.log(file, "52654");
-      var reader = new FileReader();
-      reader.onload = (data) => {
-        let res = data.target || data.srcElement;
-        this.formNewBook.bookImg = res.result;
-      };
-      reader.readAsDataURL(file);
-      this.imageFile = file;
-    },
-    imgReplace(even) {
-      let $target = even.target || even.srcElement;
-      let file = $target.files[0];
-      console.log(file, "5555");
-      var reader = new FileReader();
-      reader.onload = (data) => {
-        let res = data.target || data.srcElement;
-        this.formInline.bookImg = res.result;
-      };
-      reader.readAsDataURL(file);
-    },
-    defualtImg() {
-      this.bookImgUrl = this.defualtPic;
-    },
     isCollapse(val) {
       this.collapse = val;
-    },
-    onSubmit() {
-      console.log("submit!");
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.currentPage = val;
       if (this.queryModel === 2) {
         //模糊查询
-        SelectFuzzy(this.form.bookName, this.currentPage, this.pageSize).then(
+        ShowResourceByLike(this.form.resourceName, this.currentPage, this.pageSize).then(
           (res) => {
             // TODO
             console.log("****");
@@ -341,13 +300,12 @@ export default {
       this.dialogFormVisible = true;
       this.formInline = row;
 
-      // this.formInlineIsreturn = row.isreturn
     },
     onSubmitFuzzy() {
       //模糊查询
-      this.currentPage = 1;
-      if (this.form.bookName) {
-        SelectFuzzy(this.form.bookName).then((res) => {
+      // this.currentPage = 1;
+      if (this.form.resourceName) {
+        ShowResourceByLike(this.form.resourceName).then((res) => {
           // TODO
           this.tableData = res.data;
           this.total = res.total;
@@ -446,15 +404,8 @@ export default {
       this.categoryData = res.data;
       console.log(res.data, "99999");
     });
-    SelectBookSort().then((res) => {
-      this.bookSorts = res.data;
-      console.log(res.data, "8888");
-    });
   },
   mounted() {
-    this.$eventBus.$on("eventBusName", (val) => {
-      this.isCollapse(val);
-    });
     this.$eventBusTag.$on("eventBusName", (val) => {
       this.tagName = val;
     });

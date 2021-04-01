@@ -14,7 +14,7 @@
         :name="item.name"
         effect="dark"
       >
-        <div class="iframe" v-if="item.path == 'user'"><user-list /></div>
+        <!-- <div class="iframe" v-if="item.path == 'user'"><user-list /></div> -->
         <div class="iframe" v-if="item.path == 'comment'"><comment /></div>
         <div class="iframe" v-if="item.path == 'article'"><Article /></div>
         <div class="iframe" v-if="item.path == 'edit'"><Edit /></div>
@@ -32,7 +32,7 @@
   </div>
 </template>
 <script>
-import UserList from "../views/admin/UserList.vue";
+// import UserList from "../views/admin/UserList.vue";
 import Comment from "../views/admin/Comment.vue";
 import Sort from "../views/admin/Sort.vue";
 import Label from "../views/admin/Label.vue";
@@ -48,7 +48,7 @@ import Home from "../views/admin/Home.vue";
 export default {
   namne: "Tag",
   components: {
-    UserList,
+    // UserList,
     Comment,
     Article,
     Edit,

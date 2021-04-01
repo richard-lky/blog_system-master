@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import Index from '../views/user/Index.vue'
 
 import Home from '../views/admin/Home.vue'
-import UserList from '../views/admin/UserList.vue'
+// import UserList from '../views/admin/UserList.vue'
 import Article from '../views/admin/Article.vue'
 import Notice from '../views/admin/Notice.vue'
 import Login from '../views/Login.vue'
@@ -30,11 +30,12 @@ import Author from '../views/admin/Author.vue'
 
 Vue.use(VueRouter)
 
-const routes = [{
-  path: '/user',
-  name: 'user',
-  component: UserList
-},
+const routes = [
+//   {
+//   path: '/user',
+//   name: 'user',
+//   component: UserList
+// },
 {
   path: '/article',
   name: 'article',

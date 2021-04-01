@@ -218,3 +218,16 @@ export function ShowResourceByCategory(resourceCategory,page = 1,rows = 5) {
     }
   })
 }
+
+//根据资源分类查询信息
+export function ShowResourceByLike(resourceName,page = 1,rows = 5) {
+  return request({
+    method: 'get',
+    url: 'resource/showResourceByLike',
+    params: {
+      resourceName: resourceName,
+      page: page,
+      rows: rows
+    }
+  })
+}

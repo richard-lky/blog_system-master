@@ -69,7 +69,7 @@ export default {
                 this.noticeData = [];
             }
         });
-        ShowTagsAll().then((res) => {
+        ShowTagsAll(1,100).then((res) => {
             if (res) {
                 this.tagsData = res.data;
             } else {
