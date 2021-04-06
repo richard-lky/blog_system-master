@@ -10,7 +10,7 @@
         >
           <el-form-item>
             <el-input
-              v-model="form.noticeContent"
+              v-model="form.categoryName"
               placeholder="查询分类"
             ></el-input>
           </el-form-item>
@@ -21,7 +21,7 @@
             type="success"
             class="publish"
             size="small"
-            @click="dialogNoticeVisible = true"
+            @click="dialogCategoryVisible = true"
             >添加新分类</el-button
           >
         </el-form>
@@ -38,22 +38,22 @@
           >
           </el-table-column>
          <el-table-column
-          prop="noticeCreatetime"
+          prop="categoryId"
           label="分类ID"
         >
         </el-table-column>
         <el-table-column
           :show-overflow-tooltip="true"
-          prop="noticeContent"
+          prop="categoryName"
           label="分类名称"
         ></el-table-column>
         <el-table-column
-          prop="noticeCreatetime"
+          prop="categoryTime"
           sortable
           label="创建日期"
         >
         </el-table-column>
-        <el-table-column label="操作" width="144">
+        <el-table-column label="操作" width="154">
           <template slot-scope="scope">
             <el-tag
               @click="handleClick(scope.row)"
@@ -61,19 +61,19 @@
               class="tag-btn"
               >修 改</el-tag
             >
-            <el-tag @click="cancel(scope.row,scope.$index)" type="info" class="tag-btn"
+            <el-tag @click="deleteCategory(scope.row,scope.$index)" type="info" class="tag-btn"
               >删 除</el-tag
             >
           </template>
         </el-table-column>
       </el-table>
       <!-- 公告详情对话框 -->
-      <el-dialog title="公告" :visible.sync="dialogFormVisible">
-        <div class="notice-body">
-          {{ formInline.noticeContent }}
-          <div class="notice-info">
-            发布者: {{ formInline.userId }} {{ formInline.noticeCreatetime }}
-          </div>
+      <el-dialog title="修改分类" :visible.sync="dialogFormVisible">
+        <div class="dialog_input"> 
+          <label for="name">分类名称:</label>
+          <el-input
+              v-model="formInline.categoryName" placeholder="请输入分类名称">
+            </el-input>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button size="small" @click="dialogFormVisible = false"
@@ -82,26 +82,24 @@
           <el-button
             type="primary"
             size="small"
-            @click="dialogFormVisible = false"
+            @click="updateCategory"
             >确 定</el-button
           >
         </div>
       </el-dialog>
       <!-- 添加新公告对话框 -->
-      <el-dialog title="添加公告" :visible.sync="dialogNoticeVisible">
-        <div class="notice-body">
+      <el-dialog title="添加分类" :visible.sync="dialogCategoryVisible">
+        <div class="dialog_input"> 
+          <label for="name">分类名称:</label>
           <el-input
-            v-model="publishNotice.noticeContent"
-            type="textarea"
-            rows="5"
-            placeholder="请输入新公告的内容"
-          ></el-input>
+              v-model="publishCategory.categoryName" placeholder="请输入分类名称">
+            </el-input>
         </div>
         <div slot="footer" class="dialog-footer">
-          <el-button size="small" @click="dialogNoticeVisible = false"
+          <el-button size="small" @click="dialogCategoryVisible = false"
             >取 消</el-button
           >
-          <el-button type="primary" size="small" @click="addCategory"
+          <el-button type="primary" size="small" @click="AddCategory"
             >确 定</el-button
           >
         </div>
@@ -125,14 +123,11 @@
 
 <script>
 import {
-  // SelectSelector,
-  SelectNoticeFuzzy,
-  deleteNotice,
-  addCategory,
-} from "../../network/notice";
-import {
   ShowCategoryAll,
-
+  ShowCategoryBylike,
+  deleteCateegory,
+  AddCategory,
+  updateCategory
 } from '../../network/category'
 export default {
   name: "Sort",
@@ -141,23 +136,20 @@ export default {
       collapse: true,
       tagName: "",
       formInline: {
-      noticeContent: "",
-      noticeCreatetime: "",
-      userId: "",
+        categoryName: "",
+        categoryId: ""
       },
-      publishNotice: {
-        noticeContent: "",
-        noticeCreatetime: "",
-        userName: "",
+      publishCategory: {
+        categoryName: "",
       },
       tableData: [],
       currentPage: 1,
       pageSize: 5,
       total: 0,
       dialogFormVisible: false,
-      dialogNoticeVisible: false,
+      dialogCategoryVisible: false,
       form: {
-        noticeContent: "",
+        categoryName: "",
       },
       formLabelWidth: "70px",
     };
@@ -165,7 +157,7 @@ export default {
   created() {
     ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
       // TODO
-      console.log(res);
+      console.log("+--*362",res);
       this.tableData = res.data;
       this.total = res.total;
     });
@@ -194,8 +186,8 @@ export default {
       this.currentPage = val;
       if (this.queryModel === 2) {
         //模糊查询
-        SelectNoticeFuzzy(
-          this.form.noticeContent,
+        ShowCategoryBylike(
+          this.form.categoryName,
           this.currentPage,
           this.pageSize
         ).then((res) => {
@@ -214,15 +206,14 @@ export default {
         });
       }
     },
-    cancel(row,index) {
+    deleteCategory(row,index) {
       //注销禁用
-      this.$confirm("此操作将删除这条公告, 是否继续?", "提示", {
+      this.$confirm("此操作将删除这条分类, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      })
-        .then(() => {
-          deleteNotice(row.noticeId);
+      }).then(() => {
+          deleteCateegory(row.categoryId);
           this.tableData.splice(index,1);
           ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
             // TODO
@@ -245,11 +236,11 @@ export default {
     },
     onSubmitFuzzy() {
       //模糊查询
-      this.currentPage = 1;
-      if (this.form.noticeContent) {
-        SelectNoticeFuzzy(this.form.noticeContent).then((res) => {
+      // this.currentPage = 1;
+      if (this.form.categoryName) {
+        ShowCategoryBylike(this.form.categoryName).then((res) => {
           // TODO
-          console.log(res);
+          console.log("模糊查询",res);
           this.tableData = res.data;
           this.total = res.total;
         });
@@ -264,15 +255,39 @@ export default {
         this.queryModel = 0;
       }
     },
-    addCategory() {
-      addCategory(this.publishNotice);
-      this.dialogNoticeVisible = false;
-      console.log(this.publishNotice);
+    AddCategory() {
+      AddCategory(this.publishCategory);
+      this.dialogCategoryVisible = false;
+      console.log(this.publishCategory);
+      ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
+          console.log(res);
+          // TODO
+          this.tableData = res.data;
+          this.total = res.total;
+          // this.total = res.total
+        });
       this.$message({
         type: "success",
         message: "发布成功!",
       });
     },
+    updateCategory(){
+      this.formInline.categoryTime=null;
+      updateCategory(this.formInline);
+      this.dialogFormVisible = false;
+      console.log(this.formInline);
+      ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
+          console.log(res);
+          // TODO
+          this.tableData = res.data;
+          this.total = res.total;
+          // this.total = res.total
+        });
+      this.$message({
+        type: "success",
+        message: "发布成功!",
+      });
+    }
   },
   mounted() {
     this.$eventBus.$on("eventBusName", (val) => {
@@ -333,5 +348,9 @@ export default {
 }
 .page {
     text-align: center;
+}
+.dialog_input{
+  margin: 10px auto;
+  width: 90%;
 }
 </style>
