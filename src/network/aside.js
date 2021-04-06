@@ -9,12 +9,59 @@ export function ShowNotice() {
     })
 }
 //标签数据
-export function ShowTagsAll() {
+export function ShowTagsAll(page=1,rows=5) {
     return request({
         url: '/tags/showTagsAll',
-        method: 'get'
+        method: 'get',
+        params: {
+          page: page,
+          rows: rows
+        }
     })
 } 
+
+//添加标签
+export function AddTags(tags) {
+  return request({
+      url: '/tags/addTags',
+      method: 'post',
+      params: tags
+  })
+} 
+
+//模糊查询标签
+export function ShowTagsBylike(tagsName, page=1, rows=5) {
+  return request({
+      url: '/tags/showTagsByLike',
+      method: 'get',
+      params: {
+        tagsName: tagsName,
+        page: page,
+        rows: rows
+      }
+  })
+} 
+//删除标签
+export function deleteTags(tagsId) {
+  return request({
+      url: '/tags/deleteTags',
+      method: 'get',
+      params: {
+        tagsId: tagsId,
+      }
+  })
+} 
+
+//修改标签
+export function updateTags(tags) {
+  console.log("++**//",tags)
+  return request({
+      url: '/tags/updateTags',
+      method: 'post',
+      params: tags
+  })
+} 
+
  //博主信息
 export function ShowUser () {
   return request({

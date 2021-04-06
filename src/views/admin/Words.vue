@@ -37,7 +37,6 @@
             label="评论ID"
           >
           </el-table-column>
-          </el-table-column>
           <el-table-column
             prop="wordsName"
             :show-overflow-tooltip="true"
@@ -126,7 +125,6 @@
           <el-input
               v-model="formReply.replyContent"
               type="textarea"
-              
               :autosize="{ minRows: 2, maxRows: 6}">
             </el-input>
         </div>
@@ -160,10 +158,6 @@
 </template>
 
 <script>
-import {
-  SelectSelectorHistory2,
-} from "../../network/book";
-import { selectHistory, selectHistoryByLike } from "../../network/history";
 import {
   ShowMessageAll,
   SelectByWordNameOrContent,

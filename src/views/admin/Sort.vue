@@ -28,12 +28,18 @@
       </div>
       <el-table
         :data="tableData"
-        border
+          stripe
         style="width: 100%; min-height: 330px; margin-bottom: 15px"
       >
+        <el-table-column
+            type="index"
+            :index="indexMethod"
+            label="序号"
+          >
+          </el-table-column>
          <el-table-column
           prop="noticeCreatetime"
-          label="序号"
+          label="分类ID"
         >
         </el-table-column>
         <el-table-column
@@ -95,7 +101,7 @@
           <el-button size="small" @click="dialogNoticeVisible = false"
             >取 消</el-button
           >
-          <el-button type="primary" size="small" @click="addNotice"
+          <el-button type="primary" size="small" @click="addCategory"
             >确 定</el-button
           >
         </div>
@@ -119,12 +125,15 @@
 
 <script>
 import {
-  SelectNotice,
   // SelectSelector,
   SelectNoticeFuzzy,
   deleteNotice,
-  addNotice,
+  addCategory,
 } from "../../network/notice";
+import {
+  ShowCategoryAll,
+
+} from '../../network/category'
 export default {
   name: "Sort",
   data() {
@@ -154,7 +163,7 @@ export default {
     };
   },
   created() {
-    SelectNotice(this.currentPage, this.pageSize).then((res) => {
+    ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
       // TODO
       console.log(res);
       this.tableData = res.data;
@@ -162,6 +171,11 @@ export default {
     });
   },
   methods: {
+    indexMethod(index) {
+        let curpage = this.currentPage;
+        let limitpage = this.pageSize;
+        return(index + 1) + (curpage - 1)*limitpage;
+      },
     isCollapse(val) {
       this.collapse = val;
     },
@@ -189,22 +203,9 @@ export default {
           this.tableData = res.data;
           this.total = res.total;
         });
-      } /*  else if (this.queryModel === 1) {
-        // 筛选查询
-        SelectSelector(
-          this.formSeletor.sort,
-          this.formSeletor.pub,
-          this.formSeletor.isreturn,
-          this.currentPage,
-          this.pageSize
-        ).then((res) => {
-          // TODO
-          this.tableData = res;
-          this.total = 6;
-        });
-      }  */ else {
+      }else {
         // 普通查询
-        SelectNotice(this.currentPage, this.pageSize).then((res) => {
+        ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
           console.log(res);
           // TODO
           this.tableData = res.data;
@@ -223,7 +224,7 @@ export default {
         .then(() => {
           deleteNotice(row.noticeId);
           this.tableData.splice(index,1);
-          SelectNotice(this.currentPage, this.pageSize).then((res) => {
+          ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
             // TODO
             console.log(res);
             this.tableData = res.data;
@@ -255,7 +256,7 @@ export default {
         this.queryModel = 2;
       } else {
         //为空时切换普通查询
-        SelectNotice(this.currentPage, this.pageSize).then((res) => {
+        ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
           // TODO
           this.tableData = res.data;
           this.total = res.total;
@@ -263,42 +264,8 @@ export default {
         this.queryModel = 0;
       }
     },
-    addNotice() {
-      Date.prototype.format = function (fmt) {
-        var o = {
-          "M+": this.getMonth() + 1, //月份
-          "d+": this.getDate(), //日
-          "h+": this.getHours(), //小时
-          "m+": this.getMinutes(), //分
-          "s+": this.getSeconds(), //秒
-          "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-          S: this.getMilliseconds(), //毫秒
-        };
-
-        if (/(y+)/.test(fmt)) {
-          fmt = fmt.replace(
-            RegExp.$1,
-            (this.getFullYear() + "").substr(4 - RegExp.$1.length)
-          );
-        }
-
-        for (var k in o) {
-          if (new RegExp("(" + k + ")").test(fmt)) {
-            fmt = fmt.replace(
-              RegExp.$1,
-              RegExp.$1.length == 1
-                ? o[k]
-                : ("00" + o[k]).substr(("" + o[k]).length)
-            );
-          }
-        }
-
-        return fmt;
-      };
-      this.publishNotice.userId = this.$user.userId;
-      this.publishNotice.userName = this.$user.userName;
-      this.publishNotice.noticeCreatetime = new Date().format("yyyy-MM-dd");
-      addNotice(this.publishNotice);
+    addCategory() {
+      addCategory(this.publishNotice);
       this.dialogNoticeVisible = false;
       console.log(this.publishNotice);
       this.$message({

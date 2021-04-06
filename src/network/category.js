@@ -27,3 +27,16 @@ export function ShowArticleInfo () {
     url: '/article/showArticleInfo'
   })
 }
+
+ //查询所有分类信息
+ export function ShowCategoryAll (page=1, rows=5) {
+  return request({
+    url: '/category/showCategoryAll',
+    method: 'get',
+    params: {
+      page: page,
+      rows: rows
+    }
+
+  })
+}
