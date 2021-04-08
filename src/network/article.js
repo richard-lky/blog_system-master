@@ -32,7 +32,20 @@ export function ShowMonthArticleCount () {
 //根据文章ID查询分类
 export function ShowCategory() {
   return request({
-    url: '/category//showCategoryByArticelId',
+    url: '/category/showCategoryByArticelId',
     method: 'get'
+  })
+}
+//根据分类和标签查询
+export function ShowArticleByCategoryAndTags(categoryId, tagsId, page = 1, rows = 5) {
+  return request({
+    url: '/article/showArticleByCategoryAndTags',
+    method: 'get',
+    params: {
+      categoryId: categoryId,
+      tagId: tagsId,
+      page: page,
+      rows: rows
+    }
   })
 }

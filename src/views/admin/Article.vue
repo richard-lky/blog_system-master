@@ -15,7 +15,18 @@
                 v-for="item in categoryData"
                 :key="item.id"
                 :label="item.name"
-                :value="item.id"
+                :value="item.name"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="标签">
+            <el-select v-model="formSeletor.sort" placeholder="标签">
+              <el-option label="所有" value="所有"></el-option>
+              <el-option
+                v-for="item in tagsData"
+                :key="item.id"
+                :label="item.tagName"
+                :value="item.tagsName"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -57,6 +68,12 @@
           style="width: 100%; min-height: 300px;"
         >
           <el-table-column
+            type="index"
+            :index="indexMethod"
+            label="序号"
+          >
+          </el-table-column>
+          <el-table-column
             prop="articleTitle"
             :show-overflow-tooltip="true"
             label="文章标题"
@@ -95,77 +112,6 @@
             </template>
           </el-table-column>
         </el-table>
-        <!-- 修改资料对话框 -->
-        <el-dialog title="书籍资料" :visible.sync="dialogFormVisible">
-          <el-form
-            :model="formInline"
-            class="demo-form-inline"
-            label-width="60px"
-          >
-            <div class="book-info">
-              <el-form-item label="出版社" :label-width="formLabelWidth">
-                <el-select v-model="formInline.bookPub" placeholder="出版社">
-                  <el-option
-                    :label="item"
-                    :value="item"
-                    v-for="item in bookPubs"
-                    :key="item"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="类别" :label-width="formLabelWidth">
-                <el-select v-model="formInline.bookSort" placeholder="类别">
-                  <el-option
-                    :label="item.sortName"
-                    :value="item.sortName"
-                    v-for="item in bookSorts"
-                    :key="item.sortId"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="作者" :label-width="formLabelWidth">
-                <el-input v-model="formInline.bookAuthor"></el-input>
-              </el-form-item>
-              <el-form-item label="书名" :label-width="formLabelWidth">
-                <el-input
-                  v-model="formInline.bookName"
-                  placeholder="书名"
-                ></el-input>
-              </el-form-item>
-            </div>
-            <div class="book-img">
-              <label class="lable-img"
-                ><img
-                  :src="this.$baseImgUrl + formInline.bookImg"
-                  alt="无法加载图片"
-                  @error="defualtImg"
-                />
-              </label>
-            </div>
-
-            <el-form-item label="上架时间" :label-width="formLabelWidth">
-              <el-date-picker
-                v-model="formInline.bookRecord"
-                type="date"
-                placeholder="选择日期"
-              >
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="简介" :label-width="formLabelWidth">
-              <el-input v-model="formInline.bookIntroduce"></el-input>
-            </el-form-item>
-            <!-- <el-form-item label="状态" :label-width="formLabelWidth">
-              <el-select v-model="formInline.isreturn" placeholder="请选择活动区域">
-                <el-option label="未借" value="shanghai"></el-option>
-                <el-option label="已借" value="beijing"></el-option>
-              </el-select>
-            </el-form-item> -->
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="updateBookInfo">确 定</el-button>
-          </div>
-        </el-dialog>
       </div>
       <!-- 分页 -->
       <div class="page">
@@ -186,10 +132,6 @@
 
 <script>
 import {
-  SelectBook,
-  SelectBookPub,
-  SelectBookSort,
-  SelectSelector,
   SelectFuzzy,
   DeleteBook,
   saveBook,
@@ -201,6 +143,11 @@ import {
   ShowCategory,
 
 } from '../../network/article'
+import {
+  ShowTagsAll,
+  ShowArticleByCategoryAndTags,
+
+} from '../../network/aside'
 export default {
   name: "Article",
   components: {},
@@ -263,11 +210,15 @@ export default {
       articleData: [],
       articleState: true,
       categoryData: [],
-      
+      tagsData: [],
     };
   },
   methods: {
-    
+    indexMethod(index) {
+        let curpage = this.currentPage;
+        let limitpage = this.pageSize;
+        return(index + 1) + (curpage - 1)*limitpage;
+      },
     imgInput(even) {
       // this.imageUrl = event.target.value;
       let $target = even.target || even.srcElement;
@@ -316,7 +267,7 @@ export default {
         );
       } else if (this.queryModel === 1) {
         // 筛选查询
-        SelectSelector(
+        ShowArticleByCategoryAndTags(
           this.formSeletor.sort,
           this.formSeletor.pub,
           "所有",
@@ -329,7 +280,7 @@ export default {
         });
       } else {
         // 普通查询
-        SelectBook(this.currentPage, this.pageSize).then((res) => {
+        ArticleShow(this.currentPage, this.pageSize).then((res) => {
           console.log(res);
           // TODO
           this.tableData = res.data;
@@ -356,7 +307,7 @@ export default {
         this.queryModel = 2;
       } else {
         //为空时切换普通查询
-        SelectBook(this.currentPage, this.pageSize).then((res) => {
+        ArticleShow(this.currentPage, this.pageSize).then((res) => {
           console.log(res);
           // TODO
           this.tableData = res.data;
@@ -369,7 +320,7 @@ export default {
       //筛选查询
 
       this.currentPage = 1;
-      SelectSelector(
+      ShowArticleByCategoryAndTags(
         this.formSeletor.sort,
         this.formSeletor.pub,
         this.formSeletor.status
@@ -391,7 +342,7 @@ export default {
         .then(() => {
           DeleteBook(row.bookId);
           this.tableData.splice(index,1);
-          SelectBook(this.currentPage, this.pageSize).then((res) => {
+          ArticleShow(this.currentPage, this.pageSize).then((res) => {
             // TODO
             this.tableData = res.data;
             console.log(res.data, "*-*-*-*");
@@ -444,23 +395,6 @@ export default {
     },
   },
   created() {
-    SelectBook(this.currentPage, this.pageSize).then((res) => {
-      // TODO
-      this.tableData = res.data;
-      console.log(res.data, "*-*-*-*");
-      this.total = res.total;
-    });
-    SelectBookPub().then((res) => {
-      this.bookPubs = res.data;
-      console.log(res.data, "99999");
-    });
-    SelectBookSort().then((res) => {
-      this.categoryData = res.data;
-      console.log(res.data, "8888");
-    });
-
-
-
     //从这里开始
     ArticleShow(this.currentPage, this.pageSize).then((res) => {
       console.log(res,"----");
@@ -480,7 +414,14 @@ export default {
     } else {
       this.categoryData = [];
     }
-
+    }));
+    ShowTagsAll().then((res => {
+      console.log("1111",res.data);
+      if(res){
+        this.tagsData = res.data;
+      } else {
+        this.tagsData = [];
+      }
     }))
 
   },
