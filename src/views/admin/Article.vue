@@ -14,19 +14,19 @@
               <el-option
                 v-for="item in categoryData"
                 :key="item.id"
-                :label="item.name"
-                :value="item.name"
+                :label="item.categoryName"
+                :value="item.categoryId"
               ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="标签">
-            <el-select v-model="formSeletor.sort" placeholder="标签">
+            <el-select v-model="formSeletor.tags" placeholder="标签">
               <el-option label="所有" value="所有"></el-option>
               <el-option
                 v-for="item in tagsData"
                 :key="item.id"
-                :label="item.tagName"
-                :value="item.tagsName"
+                :label="item.tagsName"
+                :value="item.tagsId"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -44,7 +44,7 @@
         >
           <el-form-item>
             <el-input
-              v-model="form.bookName"
+              v-model="form.articleTitle"
               placeholder="输入标题，宁少字，不多字"
             ></el-input>
           </el-form-item>
@@ -54,7 +54,7 @@
               type="success"
               class="publish"
               size="small"
-              @click="dialogNewBookVisible = true"
+              @click="dialogNewArticleVisible = true"
               >写文章</el-button
             >
           </el-form-item>
@@ -93,6 +93,7 @@
           <template v-slot="scoped">
             <el-switch
               v-model="scoped.row.articleState"
+              @change= "change(scoped.row.articleId,scoped.row.articleState)" 
               active-color="#13ce66">
             </el-switch>
           </template>
@@ -106,7 +107,7 @@
                 class="tag-btn"
                 >编辑</el-tag
               >
-              <el-tag @click="cancel(scope.row,scope.$index)" type="info" class="tag-btn"
+              <el-tag @click="deleteArticle(scope.row,scope.$index)" type="info" class="tag-btn"
                 >删 除</el-tag
               >
             </template>
@@ -132,21 +133,18 @@
 
 <script>
 import {
-  SelectFuzzy,
-  DeleteBook,
-  saveBook,
   updateBook,
-  uploadImg,
 } from "../../network/book";
 import {
   ArticleShow,
   ShowCategory,
-
+  ShowArticleByCategoryAndTags,
+  ShowArticleByLike,
+  deleteArticle,
+  changeToDraft
 } from '../../network/article'
 import {
   ShowTagsAll,
-  ShowArticleByCategoryAndTags,
-
 } from '../../network/aside'
 export default {
   name: "Article",
@@ -157,10 +155,10 @@ export default {
       tagName: "",
       icon: "",
       formInline: {
-        // 书籍详情模态框
+        // 文章详情模态框
         id: "",
         bookId: "",
-        bookName: "",
+        articleTitle: "",
         bookAuthor: "",
         bookPub: "",
         bookSort: "",
@@ -170,9 +168,9 @@ export default {
         isreturn: 0,
       },
       formNewBook: {
-        // 添加书籍模态框
+        // 添加文章模态框
         bookId: "",
-        bookName: "",
+        articleTitle: "",
         bookAuthor: "",
         bookPub: "",
         bookSort: "武侠",
@@ -180,12 +178,12 @@ export default {
         bookImg: "",
         file: "",
       },
-      tableData: [], //书籍列表
+      articleData: [], //文章列表
 
       currentPage: 1,
       pageSize: 5,
       dialogFormVisible: false,
-      dialogNewBookVisible: false,
+      dialogNewArticleVisible: false,
       formInlineIsreturn: "0",
       total: 0,
       bookSorts: [],
@@ -193,59 +191,32 @@ export default {
       queryModel: 0, // 当前查询状态，用户分页切换，分页查询0， 筛选查询1， 模糊查询2
       form: {
         // 模糊查询表单
-        bookName: "",
+        articleTitle: "",
       },
       formSeletor: {
         // 筛选表单
-        sort: "所有"
+        sort: "所有",
+        tags: "所有"
       },
-      formLabelWidth: "70px",
-      bookImgUrl: "",
-      defualtPic: require("../../assets/img/avatar.png"),
-      imageFile: "",
-      imgUrl: "",
 
 
 
-      articleData: [],
       articleState: true,
       categoryData: [],
       tagsData: [],
     };
   },
   methods: {
+    //表格序号
     indexMethod(index) {
         let curpage = this.currentPage;
         let limitpage = this.pageSize;
         return(index + 1) + (curpage - 1)*limitpage;
       },
-    imgInput(even) {
-      // this.imageUrl = event.target.value;
-      let $target = even.target || even.srcElement;
-      let file = $target.files[0];
-      console.log(file, "52654");
-      var reader = new FileReader();
-      reader.onload = (data) => {
-        let res = data.target || data.srcElement;
-        this.formNewBook.bookImg = res.result;
-      };
-      reader.readAsDataURL(file);
-      this.imageFile = file;
-    },
-    imgReplace(even) {
-      let $target = even.target || even.srcElement;
-      let file = $target.files[0];
-      console.log(file, "5555");
-      var reader = new FileReader();
-      reader.onload = (data) => {
-        let res = data.target || data.srcElement;
-        this.formInline.bookImg = res.result;
-      };
-      reader.readAsDataURL(file);
-    },
-    defualtImg() {
-      this.bookImgUrl = this.defualtPic;
-    },
+      change(articleId,value){
+        console.log("改变了",value)
+        changeToDraft(articleId,value);
+      },
     isCollapse(val) {
       this.collapse = val;
     },
@@ -257,11 +228,11 @@ export default {
       this.currentPage = val;
       if (this.queryModel === 2) {
         //模糊查询
-        SelectFuzzy(this.form.bookName, this.currentPage, this.pageSize).then(
+        ShowArticleByLike(this.form.articleTitle, this.currentPage, this.pageSize).then(
           (res) => {
             // TODO
             console.log("****");
-            this.tableData = res.data;
+            this.articleData = res.data;
             this.total = res.total;
           }
         );
@@ -269,13 +240,12 @@ export default {
         // 筛选查询
         ShowArticleByCategoryAndTags(
           this.formSeletor.sort,
-          this.formSeletor.pub,
-          "所有",
+          this.formSeletor.tags,
           this.currentPage,
           this.pageSize
         ).then((res) => {
           // TODO
-          this.tableData = res.data;
+          this.articleData = res.data;
           this.total = res.total;
         });
       } else {
@@ -283,25 +253,23 @@ export default {
         ArticleShow(this.currentPage, this.pageSize).then((res) => {
           console.log(res);
           // TODO
-          this.tableData = res.data;
+          this.articleData = res.data;
           this.total = res.total;
-          // this.total = res.total
         });
       }
     },
     handleClick(row) {
       this.dialogFormVisible = true;
       this.formInline = row;
-
       // this.formInlineIsreturn = row.isreturn
     },
     onSubmitFuzzy() {
       //模糊查询
       this.currentPage = 1;
-      if (this.form.bookName) {
-        SelectFuzzy(this.form.bookName).then((res) => {
+      if (this.form.articleTitle) {
+        ShowArticleByLike(this.form.articleTitle).then((res) => {
           // TODO
-          this.tableData = res.data;
+          this.articleData = res.data;
           this.total = res.total;
         });
         this.queryModel = 2;
@@ -310,7 +278,7 @@ export default {
         ArticleShow(this.currentPage, this.pageSize).then((res) => {
           console.log(res);
           // TODO
-          this.tableData = res.data;
+          this.articleData = res.data;
           this.total = res.total;
         });
         this.queryModel = 0;
@@ -318,33 +286,32 @@ export default {
     },
     onSubmitSeletor() {
       //筛选查询
-
-      this.currentPage = 1;
       ShowArticleByCategoryAndTags(
         this.formSeletor.sort,
-        this.formSeletor.pub,
-        this.formSeletor.status
+        this.formSeletor.tags,
+        this.currentPage, 
+        this.pageSize
       ).then((res) => {
+      console.log(res);
         // TODO
-        this.tableData = res.data;
+        this.articleData = res.data;
         this.total = res.total;
       });
-      console.log(this.formSeletor);
       this.queryModel = 1;
     },
-    cancel(row,index) {
-      //删除书籍
-      this.$confirm("此操作将删除这本书籍数据, 是否继续?", "提示", {
+    deleteArticle(row,index) {
+      //删除文章
+      this.$confirm("此操作将删除这条文章数据, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          DeleteBook(row.bookId);
-          this.tableData.splice(index,1);
+          deleteArticle(row.articleId);
+          this.articleData.splice(index,1);
           ArticleShow(this.currentPage, this.pageSize).then((res) => {
             // TODO
-            this.tableData = res.data;
+            this.articleData = res.data;
             console.log(res.data, "*-*-*-*");
             this.total = res.total;
           });
@@ -361,29 +328,7 @@ export default {
         });
     },
     addBook() {
-      this.dialogNewBookVisible = false;
-      this.formNewBook.bookSort = this.formSeletor.sort;
-      this.formNewBook.bookPub = this.formSeletor.pub;
-      console.log(this.formNewBook, "5***4");
-      this.formNewBook.bookImg = "";
-      let file = new FormData(); // 创建form对象
-      file.append("file", this.imageFile); // 通过append向form对象添加数据
-      // let param = new FormData(); // 创建form对象
-      // param.append("bookAuthor", this.formNewBook.bookAuthor);
-      // param.append("bookIntroduc", this.formNewBook.bookIntroduc);
-      // param.append("bookName", this.formNewBook.bookName);
-      // param.append("bookPub", this.formNewBook.bookPub);
-      // param.append("bookSort", this.formNewBook.bookSort);
-      // console.log(param.get("file")); // FormData私有类对象，访问不到，可以通过get判断值是否传进去
-      uploadImg(file);
-      console.log(file, "5---4");
-      saveBook(this.formNewBook);
-      console.log(this.formNewBook, "5***4");
-      // console.log(param, "998");
-      this.$message({
-        type: "success",
-        message: "发布成功!",
-      });
+      
     },
     updateBookInfo() {
       //修改图书信息
