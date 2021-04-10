@@ -10,7 +10,13 @@
             <!-- 文章详情 -->
             <div class="m-details">
                 <div  class="m-contain-content">
-                    <article v-html="value" ></article>
+                    <div class="details_title">{{articleTable.articleTitle}}</div>
+                    <mavon-editor v-html="articleTable.articleContent" 
+                        :subfield="false"
+                        :boxShadow="false"
+                        defaultOpen="preview"
+                        :toolbarsFlag="false"
+                        previewBackground="#4183C4"/>
                     <!-- end -->
                     <div class="m-end">
                         <el-divider><div class="m-end-text">END</div></el-divider>
@@ -102,18 +108,24 @@
 </template>
 
 <script>
+import { mavonEditor } from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 import Aside from '../../components/Aside.vue'
 import NavBar from '../../components/NavBar.vue'
 import $ from 'jquery'
 import {
   ShowCommentById,
+  
 } from "../../network/comment";
-
+import {
+    ShowArticleById
+} from '../../network/article';
 export default {
     name: "Details",
     components: {
         Aside,
-        NavBar
+        NavBar,
+        mavonEditor
     },
     data() {
         return {
@@ -125,7 +137,8 @@ export default {
             textarea: '',
             input_info: '',
             placeholder: "请输入评论信息...",
-            articleData: [], // 文章列表
+            articleData: [], // 评论列表
+            articleTable: [], //文章内容详情
             currentPage: 1,
             pageSize: 5,
             total: 8,
@@ -146,6 +159,14 @@ export default {
             } else {
                 this.articleData = [];
                 this.total = 0;
+            }
+        }));
+        ShowArticleById(sessionStorage.getItem('articleId')).then((res=>{
+            console.log(sessionStorage.getItem('articleId'),"++***++",res);
+            if (res) {
+                this.articleTable = res;
+            } else {
+                this.articleTable = [];
             }
         }));
     },
@@ -200,7 +221,7 @@ export default {
   vertical-align: top;
 }
 .m-contain-content {
-    padding: 28px 56px;
+    padding: 28px 36px;
 }
 .m-end {
     display: inline-block;
@@ -325,5 +346,13 @@ export default {
 }
 .comment-form .m-submit-buttom .el-icon-edit {
     margin-right: 7px;
+}
+.v-note-wrapper {
+    border: none;
+}
+.details_title {
+    margin: 20px 0;
+    font-size: 28px;
+    font-weight: 600;
 }
 </style>

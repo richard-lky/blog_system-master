@@ -9,6 +9,17 @@ export function showCategoryCount() {
     })
 }
 
+// 根据id查询文章
+export function ShowArticleById(articleId) {
+  return request({
+      url: '/article/selectArticleById',
+      method: 'get',
+      params: {
+        articleId: articleId
+      }
+  })
+} 
+
 // 分页查询文章
 export function ArticleShow(page = 1,rows = 5) {
     return request({
@@ -90,3 +101,29 @@ export function changeToDraft(articleId,value) {
     }
   })
 }
+
+
+//发布文章
+export function publishArticle(Article) {
+  console.log("+++",Article)
+  return request({
+    url: '/article/insertArticle',
+    method: 'post',
+    params: Article
+  })
+} 
+
+//上传文章中的图片
+export function uploadPicture(file) {
+  console.log("+++",file)
+  return request({
+    url: '/upload/uploadImage',
+    method: 'post',
+    // async: false,
+    // cache: false,
+    // contentType: false,
+    // processData: false,
+    data: file,
+    headers: { 'Content-Type': 'multipart/form-data; boundary=OCqxMF6-JxtxoMDHmoG5W5eY9MGRsTBp' }
+  })
+} 
