@@ -159,7 +159,7 @@ export default {
   created() {
     ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
       // TODO
-      console.log(res);
+      console.log("+--*362",res);
       this.tableData = res.data;
       this.total = res.total;
     });
@@ -243,7 +243,7 @@ export default {
       if (this.form.categoryName) {
         ShowCategoryBylike(this.form.categoryName).then((res) => {
           // TODO
-          console.log(res);
+          console.log("模糊查询",res);
           this.tableData = res.data;
           this.total = res.total;
         });
@@ -276,6 +276,23 @@ export default {
         message: "发布成功!",
       });
     },
+    updateCategory(){
+      this.formInline.categoryTime=null;
+      updateCategory(this.formInline);
+      this.dialogFormVisible = false;
+      console.log(this.formInline);
+      ShowCategoryAll(this.currentPage, this.pageSize).then((res) => {
+          console.log(res);
+          // TODO
+          this.tableData = res.data;
+          this.total = res.total;
+          // this.total = res.total
+        });
+      this.$message({
+        type: "success",
+        message: "发布成功!",
+      });
+    }
   },
   mounted() {
     this.$eventBus.$on("eventBusName", (val) => {
