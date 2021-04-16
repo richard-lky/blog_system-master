@@ -51,3 +51,12 @@ export function deleteComment(commentId) {
   })
 }
 
+// 添加评论
+export function AddComment(comment) {
+  return request({
+      method: 'post',
+      url: '/comment/insertCommentByArticleId',
+      params:  comment
+      
+  })
+}

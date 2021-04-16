@@ -10,14 +10,14 @@
             <i class="el-icon-star-on m-icon"></i>
             正文</div> -->
           <div class="m-recommend">
-            <template  v-for="(item,index) in articleData">
-              <div class="m-recommend-item" :key="item.id" v-if="index<4">
-                  <a href=" " class="m-recommend-a">
-                  <img :src="$baseImgUrl + item.picture" alt="" class="m-img" @click="handleClick(item.articleId)">
-                  <span class="m-img-title"><span style="padding-left:6px">{{item.articleSummary}}</span></span>
-                </a>
-            </div>
-            </template>
+            <!-- <template  v-for="item in articleViewsData"> -->
+              <div class="m-recommend-item" v-for="item in articleViewsData" :key="item.id">
+                  <a href="#" class="m-recommend-a">
+                    <img :src="item.picture" alt="" class="m-img" @click="handleClick(item)">
+                    <span class="m-img-title"><span style="padding-left:6px">{{item.articleSummary}}</span></span>
+                  </a>
+              </div>
+            <!-- </template> -->
           </div>
           <div class="m-new-blogs">
             <div :xs="20" :sm="20" class="m-opacity m-title">
@@ -26,13 +26,13 @@
             <div class="m-new-list">
               <div class="m-new-item"  v-for="item in articleData" :key="item.id">
                 <div class="m-new-info">
-                  <h1 class="m-new-title" @click="handleClick(item.articleId)"><a class="m-recommend_title-a" href=" ">{{item.articleTitle}}</a> </h1>
+                  <h1 class="m-new-title" @click="handleClick(item)"><a class="m-recommend_title-a" href="#">{{item.articleTitle}}</a> </h1>
                   <p class="m-new-text">
                     {{item.articleSummary}}
                   </p>
                   <div class="m-publish-info">
                       <div class="m-publish-avarter">
-                      <img :src="$baseImgUrl + item.aboutImg" alt="">
+                      <img :src="item.aboutImg" alt="">
                       <div class="m-avarter-name"><a class="m-recommend_title-a" href=" ">{{item.aboutName}}</a></div>
                     </div>
                     <div class="m-publish-time"><i class="el-icon-date m-icon"></i>{{item.createTime}}</div>
@@ -44,14 +44,17 @@
                   <div class="m-new-category"><a href=" " class="m-category-a">{{item.categoryName}}</a></div>
                   <div class="tags"><el-tag type="success">{{item.tagsName}}</el-tag></div>
                 </div>
-                <div class="m-new-img" @click="handleClick(item.articleId)">
-                  <img :src="$baseImgUrl + item.picture" alt="">
+                <div class="m-new-img" @click="handleClick(item)">
+                  <img :src="item.picture" alt="">
                 </div>
               </div>
               <hr>
               <div class="m-page">
               <el-pagination
                 background
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
+                :page-size="pageSize"
                 layout="prev, pager, next"
                 :total="total">
               </el-pagination>
@@ -77,6 +80,7 @@ import NavBar from '../../components/NavBar.vue'
 import Aside from '../../components/Aside.vue'
 import {
   ArticleShow,
+  ShowArticleByViews
 } from "../../network/article";
 export default {
   name: 'Index',
@@ -88,8 +92,9 @@ export default {
     return {
       articleData: [], // 文章列表
       currentPage: 1,
-      pageSize: 5,
-      total: 8,
+      pageSize: 10,
+      total: 20,
+      articleViewsData: []
     }
   },
   created() {
@@ -98,7 +103,7 @@ export default {
     console.log(user && user.userName, user && user.userId);
     
     ArticleShow(this.currentPage, this.pageSize).then((res) => {
-      console.log(res.data,"----");
+      console.log(res,"----");
       if (res) {
         this.articleData = res.data;
         this.total = res.total;
@@ -107,18 +112,56 @@ export default {
         this.total = 0;
       }
     });
-
+    ShowArticleByViews().then((ress) => {
+      console.log(ress.data,"--+++--");
+      if (ress) {
+        // this.articleViesData = ress.data;
+        this.articleViewsData = ress.data;
+        console.log(ress.data,"++//--",this.articleViewsData)
+      } 
+    });
   },
   methods: {
-    handleClick(articleId){
-      console.log("点击的文章"+articleId);
+    handleClick(item){
+      console.log("点击的文章"+item.articleId);
+      
       this.$router.push({
         name: "details",
         params: {
-          articleId: articleId,
+          articleId: item.articleId,
+          views: item.views
         },
       });
-    }
+      
+    },
+      handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+      if (this.queryModel === 2) {
+        //模糊查询
+        ArticleShow(
+          this.form.noticeContent,
+          this.currentPage,
+          this.pageSize
+        ).then((res) => {
+          // TODO
+          this.tableData = res.data;
+          this.total = res.total;
+        });
+      }  else {
+        // 普通查询
+        ArticleShow(this.currentPage, this.pageSize).then((res) => {
+        console.log(res.data,"----");
+        if (res) {
+          this.articleData = res.data;
+          this.total = res.total;
+        } else {
+          this.articleData = [];
+          this.total = 0;
+        }
+      });
+      }
+    },
   }
 };
 </script>

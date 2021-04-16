@@ -40,7 +40,7 @@
 
               </div>
               <div class="m_new_img"  @click="handleClick(item.articleId)">
-              <img :src="$baseImgUrl + item.picture" alt="">
+              <img :src="item.picture" alt="">
               </div>
           </div>
           </div>
@@ -48,6 +48,9 @@
           <div class="m_page">
             <el-pagination
               background
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="pageSize"
               layout="prev, pager, next"
               :total="total">
             </el-pagination>
@@ -75,7 +78,7 @@ export default {
       articleData: [], // 文章列表
       categoryData: [],
       currentPage: 1,
-      pageSize: 5,
+      pageSize: 10,
       total: 8,
     }
   },
@@ -114,6 +117,34 @@ export default {
           articleId: articleId,
         },
       });
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+      if (this.queryModel === 2) {
+        //模糊查询
+        ArticleShow(
+          this.form.noticeContent,
+          this.currentPage,
+          this.pageSize
+        ).then((res) => {
+          // TODO
+          this.tableData = res.data;
+          this.total = res.total;
+        });
+      }  else {
+        // 普通查询
+        ArticleShow(this.currentPage, this.pageSize).then((res) => {
+        console.log(res.data,"----");
+        if (res) {
+          this.articleData = res.data;
+          this.total = res.total;
+        } else {
+          this.articleData = [];
+          this.total = 0;
+        }
+      });
+      }
     }
   }
 
@@ -192,7 +223,7 @@ export default {
     color: #00B5AD;
     position: relative;
     left: -2px;
-    padding:2px 14px;
+    padding:2.2px 14px;
     border: #00B5AD solid 1px;
     border-radius: 0 5px 5px 0;
 }

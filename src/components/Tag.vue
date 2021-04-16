@@ -78,6 +78,7 @@ export default {
     };
   },
   methods: {
+    
     addTab(tabName, path) {
       let result = 0;
       for (let i = 0; i < this.editableTabs.length; i++) {
@@ -132,10 +133,11 @@ export default {
       this.isActive(val);
       this.addTab(val, path);
     });
-    this.$eventBusiIcon.$on("eventBusName", (val, index) => {
-      console.log(val);
-      this.icon = index;
-    });
+    
+    // this.$eventBusiIcon.$on("eventBusName", (val, index) => {
+    //   console.log("tag",val);
+    //   this.icon = index;
+    // });
   },
 };
 </script>

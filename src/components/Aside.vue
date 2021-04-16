@@ -1,10 +1,10 @@
 <template>
-    <div class="aside_content">
+    <div id="aside" class="aside_content">
         <div class="aside_avater">
             <div class="card_content">
                 <div class="card_info">
                     <div class="card_info_img">
-                        <img :src="$baseImgUrl + userInfo.aboutImg" alt="">
+                        <img :src="userInfo.aboutImg" alt="">
                     </div>
                     <div class="author_info">{{userInfo.aboutName}}</div>
                     <div class="author_description">{{userInfo.aboutMotto}}</div>
@@ -47,6 +47,7 @@ import  {
     ShowUser,
     ShowArticleInfo
 } from "../network/aside";
+import $ from 'jquery'
 export default {
     name: "Aside",
     data() {
@@ -55,14 +56,21 @@ export default {
             tagsData: [],
             userInfo: [],
             articleInfo: [],
+            
         }
     },
-    method() {
-        
+    mounted() {
+        $(window).resize(function(){ 
+        var Width = $(window).width();
+        if(Width < 800) {
+            $("#aside").css("display", "none");
+        } else {
+            $("#aside").css("display", "inline-block");
+        }
+    })
     },
     created() {
         ShowNotice().then((res) => {
-            console.log("****",res)
             if (res) {
                 this.noticeData = res;
             } else {
@@ -90,20 +98,20 @@ export default {
                 this.articleInfo = [];
             }
         })
-
-    }
+    },
 }
 </script>
 <style scoped>
 .aside_content {
     display: inline-block;
-    width: 25%;
+    max-width: 25%;
     vertical-align: top;
 }
 .aside_avater {
     background: #fff;
     margin-right: 15px;
     padding: 20px 24px;
+    max-width: 300px;
     border-radius: 5px;
     box-shadow: 3px 3px 3px 0 rgba(0, 0, 0, .05);
     -webkit-box-shadow: #000000 0px 0px 10px;

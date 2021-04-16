@@ -202,7 +202,7 @@
           desc: ''
         },
         formLabelWidth: '120px',
-        pageSize: 6,
+        pageSize: 10,
         total: 9,
         queryModel: 0  // 当前查询状态，用户分页切换，分页查询0，  模糊查询1
       

@@ -9,61 +9,81 @@
             <Aside></Aside>
             <div class="message_content">
                 <div class="message_new">
-                     <el-input
-                        class="info_input"
-                        placeholder="请输入昵称"
-                        prefix-icon="el-icon-user"
-                        v-model="input_info">
-                    </el-input>
-                    <div class="space"></div>
-                    <el-input
-                        class="info_input"
-                        placeholder="请输入邮箱，不做展示用"
-                        prefix-icon="el-icon-message"
-                        v-model="input_info">
-                    </el-input>
-                    <div class="space"></div>
-                    <el-input
-                        class="info_input"
-                        placeholder="请输入头像地址，非必填"
-                        prefix-icon="el-icon-message"
-                        v-model="input_info">
-                    </el-input>
-                    <div class="space"></div>
-                    <el-input
-                        class="info_input"
-                        placeholder="请输入个人网站地址，非必填"
-                        prefix-icon="el-icon-paperclip"
-                        v-model="input_info">
-                    </el-input>
-                    <el-input
-                        id="textarea"
-                        type="textarea"
-                        style="width: 96%"
-                        :rows="7"
-                        :placeholder="placeholder"
-                        v-model="textarea">
+                    <el-form
+                        :model="messageForm"
+                        status-icon
+                        :rules="rules"
+                        ref="messageForm"
+                        label-width="40px"
+                        class="demo-ruleForm"
+                        >
+                        <el-form-item prop="wordsName">
+                            <el-input
+                                class="info_input"
+                                placeholder="请输入昵称"
+                                prefix-icon="el-icon-user"
+                                v-model="messageForm.wordsName">
+                            </el-input>
+                        </el-form-item>
+                        <div class="space"></div>
+                        <el-form-item prop="wordsMail">
+                        <el-input
+                            class="info_input"
+                            placeholder="请输入邮箱，不做展示用"
+                            prefix-icon="el-icon-message"
+                            v-model="messageForm.wordsMail">
                         </el-input>
-                        <el-button type="success" class="m_submit_buttom" ><i class="el-icon-edit"></i>发表</el-button>
+                        </el-form-item>
+                        <div class="space"></div>
+                        <el-form-item>
+                        <el-input
+                            class="info_input"
+                            placeholder="请输入头像地址，非必填"
+                            prefix-icon="el-icon-picture-outline"
+                            v-model="messageForm.wordsImg">
+                        </el-input>
+                        </el-form-item>
+                        <div class="space"></div>
+                        <el-form-item>
+                        <el-input
+                            class="info_input"
+                            placeholder="请输入个人网站地址，非必填"
+                            prefix-icon="el-icon-paperclip"
+                            v-model="messageForm.wordsWebsite">
+                        </el-input>
+                        </el-form-item>
+                        <el-input
+                            id="textarea"
+                            type="textarea"
+                            style="width: 96%"
+                            :rows="7"
+                            maxlength="100"
+                            show-word-limit
+                            :placeholder="placeholder"
+                            v-model="messageForm.wordsContent">
+                            </el-input>
+                            <el-button type="success" class="m_submit_buttom" @click="submit(messageForm)" ><i class="el-icon-edit"></i>发表</el-button>
+                    </el-form>
                 </div>
                 <!-- 留言列表 -->
                 <div class="m_comment_list">
                     <div>
                         <h3 class="comment_list_title">留言</h3>
+                        <div v-if="messageData.length == 0"><br>还没有人留言，快来留言吧！！！</div>
                         <div class="comment" v-for="item in messageData" :key="item.id">
-                            <a href="#" class="avatar"><img :src="$baseImgUrl + item.wordsImg" alt=""></a>
+                            <a href="#" class="avatar"><img :src="item.wordsImg" alt=""></a>
                             <div class="content">
                                 <a href="#" class="author"><span>{{item.wordsName}}</span></a>
                                 <div class="metadata"><span>{{item.wordsTime}}</span></div>
                                 <div class="text">{{item.wordsContent}}</div>
                                 <div class="actions">
-                                    <a href="#" class="reply"  @click="reply(item.wordsName)">回复</a>
+                                    <a href="#" class="reply"  @click="childReply(item.wordsName,item.wordsId)">回复</a>
                                 </div>
                             </div>
                             <!-- 子集留言 -->
                             <div class="comment_child" v-for="child in item.replyList" :key="child.id">
                                 <div class="comment">
-                                    <a href="#" class="avatar"><img :src="$baseImgUrl + child.replyImg" alt=""></a>
+                                    <a href="#" class="avatar"><img :src="child.replyImg" alt=""></a>
                                     <div class="content">
                                         <a href="#" class="author">
                                             <span>{{child.replyName}}</span></a>
@@ -75,17 +95,21 @@
                                         <div class="metadata"><span>{{child.replyTime}}</span></div>
                                         <div class="text">{{child.replyContent}}</div>
                                         <div class="actions">
-                                            <a href="#" class="reply"  @click="reply(child.replyName)">回复</a>
+                                            <a href="#" class="reply"  @click="childReply(child.replyName,item.wordsId)">回复</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <el-divider></el-divider>
                         </div>
                     </div>
                 </div>
                 <div class="m_page">
                     <el-pagination
                         background
+                        @current-change="handleCurrentChange"
+                        :current-page="currentPage"
+                        :page-size="pageSize"
                         layout="prev, pager, next"
                         :total="total">
                     </el-pagination>
@@ -101,7 +125,8 @@ import NavBar from '../../components/NavBar.vue'
 import Aside from '../../components/Aside.vue'
 import $ from 'jquery'
 import {
-    ShowWordsAll
+    ShowWordsAll,
+    AddMessage,
 } from '../../network/message'
 export default {
     name: "Friends",
@@ -110,14 +135,59 @@ export default {
         Aside,
     },
     data() {
+        var checkId = (rule, value, callback) => {
+        if (!value) {
+            return callback(new Error("昵称不能为空"));
+        }
+            // if (value !== '') {
+            // let regex = /\w/
+            // if (!regex.test(value)) {
+            //     return callback(new Error('昵称只能为数字、字母和下划线'))
+            // } else {
+            //     callback()
+            // }
+            // }
+            callback()
+        };
+        var checkEmail = (rule, value, callback) => {
+        if (!value) {
+            return callback(new Error("邮箱不能为空"));
+        }
+            if (value !== '') {
+            let reg = /\w+@[a-z0-9]+\.[a-z]{2,4}/;
+            if (!reg.test(value)) {
+                return callback(new Error('请输入正确的邮箱！'))
+            } else {
+                callback()
+            }
+        }
+        callback()
+        };
         return {
             textarea: '',
             input_info: '',
             placeholder: "请输入留言信息...",
             messageData: [], // 留言列表
+            messageForm: {
+                wordsContent: '',
+                wordsName: '',
+                wordsMail: '',
+                wordsWebsite: '',
+                wordsImg: '',
+                replyId: '',
+                
+            },
             currentPage: 1,
-            pageSize: 5,
+            pageSize: 10,
             total: 8,
+            ruleForm: {
+                email: "",
+                id: "",
+            },
+            rules: {
+                wordsMail: [{ validator: checkEmail, trigger: "blur" }],
+                wordsName: [{ validator: checkId, trigger: "blur" }],
+            },
         }
     },
     created() {
@@ -133,10 +203,49 @@ export default {
         }));
     },
     methods: {
-         reply(name) {
+        childReply(name,replyId) {
             $("textarea").focus();
             this.placeholder = "@"+name;
-        }
+            this.messageForm.replyId = replyId;
+        },
+        submit(messageForm){
+            console.log(messageForm)
+            if (messageForm.wordsContent == '') {
+                this.$message.error('留言信息不能为空！')
+            }else {
+                AddMessage(this.messageForm);
+                this.$message.success('发表成功！')
+            }
+        },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+    //   if (this.queryModel === 2) {
+    //     //模糊查询
+    //     ArticleShow(
+    //       this.form.noticeContent,
+    //       this.currentPage,
+    //       this.pageSize
+    //     ).then((res) => {
+    //       // TODO
+    //       this.tableData = res.data;
+    //       this.total = res.total;
+    //     });
+    //   }  else {
+        // 普通查询
+        ShowWordsAll(this.currentPage,this.pageSize).then((res=>{
+            console.log("++***++",res);
+            if (res) {
+                this.messageData = res.data;
+                this.total = res.total;
+            } else {
+                this.messageData = [];
+                this.total = 0;
+            }
+        }));
+    //   }
+    }
+
     },
 
 }
@@ -183,8 +292,6 @@ export default {
     margin-bottom: 60px;
 }
 .info_input {
-    width: 23%;
-    margin: 1.5% 0;
     display: inline-block;
 }
 .space {
@@ -219,6 +326,7 @@ export default {
     height: 40px;
     width:40px;
     border-radius: 3px;
+    object-fit: cover;
 }
 .m_comment_list .comment .content {
     text-align: left;
@@ -291,5 +399,12 @@ export default {
   margin: 20px auto 0;
   padding: 10px;
   opacity: 0.9;
+}
+.el-form-item {
+    display: inline-block;
+    width: 23%;
+}
+.el-form-item__content {
+    margin: 10px 0 0;
 }
 </style>

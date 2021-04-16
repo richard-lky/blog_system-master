@@ -8,7 +8,7 @@
         <div class="m_about">
             <Aside></Aside>
             <div class="about_contain">
-                <div class="about_img"><img src="../../assets/img/bg_lake.jpg" alt=""></div>
+                <div class="about_img"><img :src="aboutTable.aboutImg" alt=""></div>
                 <div class="about_avater">名字</div>
                 <div>
                     <div class="about_options">
@@ -16,7 +16,7 @@
                             placement="bottom"
                             width="150"
                             trigger="hover">
-                            <img src="../../assets/img/bg_lake.jpg" class="button_img" alt="">
+                            <img :src="aboutTable.aboutBgimg" class="button_img" alt="">
                             <div class="hover_titel">微信 </div>
                             <el-button slot="reference" class="option_button"><img class="button_icon" src="../../assets/img/weixin.png"/></el-button>
                         </el-popover>
@@ -26,13 +26,13 @@
                             placement="bottom"
                             width="150"
                             trigger="hover">
-                            <img src="../../assets/img/bg_lake.jpg" class="button_img" alt="">
+                            <img :src="aboutTable.aboutQq" class="button_img" alt="">
                             <div class="hover_titel">qq </div>
                             <el-button slot="reference" class="option_button"><img class="button_icon" src="../../assets/img/qq.png"/></el-button>
                         </el-popover>
                     </div>
                     <div class="about_options">
-                        <a href="https://github.com/richard-lky/blog_system-master">
+                        <a target="_blank" href="https://github.com/richard-lky/blog_system-master">
                             <el-popover
                                 placement="bottom"
                                 width="160"
@@ -54,22 +54,12 @@
                 </div>
                 <hr class="about_separator">
                 <div class="about_introduction">
-                    <p>“小二，上茶~”</p>
-                    <p>“来~嘞~，客官您稍等”</p>
-                    <p>“各位客官，我是ONESTAR，人称“一颗星”，此客栈掌柜的”</p>
-                    <br>
-                    <p>95后</p>
-                    <p>爱编程、爱运动、爱折腾</p>
-                    <p>生命在于折腾</p>
-                    <p>世界很大</p>
-                    <p>有些鸟儿注定是不会被关在笼子里的</p>
-                    <p>因为它们的每一片羽毛都闪耀着自由的光辉</p>
-                    <p>既然来到了人间</p>
-                    <p>便去经历，去拼搏，去感受，去爱</p>
-                    <p>生命不息，折腾不止</p>
-                    <p>总有些人，有些事，会让你感觉到生命的温暖和满足，让你感慨生命的“不虚此行”</p>
-                    <p>届时，我会说</p>
-                    <p>我来过，我不后悔！</p>
+                    <mavon-editor v-html="aboutTable.aboutContent" 
+                        :subfield="false"
+                        :boxShadow="false"
+                        defaultOpen="preview"
+                        :toolbarsFlag="false"
+                        previewBackground="#4183C4"/>
                 </div>
                 <el-divider>END</el-divider>
             </div>
@@ -78,15 +68,40 @@
 </template>
 
 <script>
+import 'mavon-editor/dist/css/index.css'
 import NavBar from "../../components/NavBar.vue"
 import Aside from '../../components/Aside.vue'
 
+import {
+    ShowAbout
+} from '../../network/others'
 export default {
     name: "About",
     components: {
         NavBar,
         Aside
+    },
+    data() {
+        return {
+            aboutTable: {
+                aboutContent: '',
+            }
+        }
+    },
+    method: {
+
+    },
+    mounted() {
+        ShowAbout().then(res => {
+            console.log(res)
+            if(res){
+                this.aboutTable = res;
+            }else {
+                this.aboutTable =[];
+            }
+        })
     }
+    
 }
 </script>
 
@@ -132,11 +147,13 @@ export default {
 }
 .about_img {
     margin-top: 30px;
+    object-fit: cover;
 }
 .about_img img{
     height: 150px;
     width: 150px;
     margin: 0 auto;
+    object-fit: cover;
     border-radius: 50%;
 }
 .about_avater {

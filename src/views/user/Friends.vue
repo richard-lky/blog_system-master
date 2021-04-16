@@ -25,7 +25,7 @@
                         <div class="links_content">
                             <div class="links_item" v-for="item in friendsData" :key="item.id">
                             <a href="#">
-                                <img :src="$baseImgUrl + item.linksImg" alt="">
+                                <img :src="item.linksImg" alt="">
                                 <div class="item_info">{{item.linksName}}</div>
                             </a>
                             </div>
@@ -52,7 +52,7 @@ export default {
         return {
             friendsData: [],
             currentPage: 1,
-            pageSize: 5,
+            pageSize: 100,
             total: 8,
         }
     },
@@ -146,20 +146,21 @@ export default {
     border: 1px solid rgba(34,36,38,.15);
     box-shadow: 3px 3px 3px 0 rgba(0, 0, 0, .05);
     -webkit-box-shadow: #000000 0px 0px 10px;
+    text-align: center;
     opacity: 0.9;
 }
 .links_contain {
-    width: 90%;
     height: 100%;
     margin: 0 auto;
 }
 .links_content {
     width:100%;
     height: 100%;
+    text-align: center;
 }
 .links_item {
-    width: 228px;
     height: 258px;
+    margin: 0 20px;
     display: inline-block;
 }
 .links_item a {

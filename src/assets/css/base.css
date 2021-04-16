@@ -229,3 +229,23 @@ table {
   .el-table--striped .el-table__body tr.el-table__row--striped td {
     background: #f0f9eb;
 }
+#album .el-dialog, .el-pager li{
+    background: none;
+    box-shadow: none;
+  }
+  #album .el-dialog__header {
+      padding: 0;
+      padding-bottom: 5px;
+  }
+ .message_new .el-form-item__content {
+    margin: 10px 0 0 !important;
+}
+.comment-form .el-form-item__content {
+    margin: 10px 0 0 !important;
+}
+.comment-form .el-textarea {
+    width: 100% !important;
+}
+.about_introduction .v-note-wrapper {
+    border: none;
+}

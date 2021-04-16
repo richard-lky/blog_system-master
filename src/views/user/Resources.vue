@@ -27,9 +27,9 @@
                             <div class="collect_content">
                                 <a class="collect_item" v-for="item in articleData" :key="item.id">
                                     <div class="item_content">
-                                        <img :src="$baseImgUrl + item.resourceImg" alt="">
+                                        <img :src="item.resourceImg" alt="">
                                         <div class="link_name">{{item.resourceName}}</div>
-                                        <div class="link_meta">视频类</div>
+                                        <!-- <div class="link_meta">视频类</div> -->
                                         <div class="link_description">{{item.resourceDescribe}}</div>
                                     </div>
                                 </a>
@@ -157,7 +157,7 @@ export default {
     color: #00B5AD;
     position: relative;
     left: -2px;
-    padding:1.7px 14px;
+    padding: 2.2px 14px;
     border: #00B5AD solid 1px;
     border-radius: 0 5px 5px 0;
 }
@@ -217,6 +217,7 @@ export default {
 .collect_item {
     text-align: left;
     margin: 12.25px 10.5px;
+    min-width: 140px;
     border-radius: 5px;
     cursor: pointer;
     box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #F2711C, 0 1px 3px 0 #D4D4D5;

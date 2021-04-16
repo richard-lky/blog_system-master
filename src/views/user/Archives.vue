@@ -42,7 +42,7 @@
                                 </li>
                                 <li v-for="item in articleData" :key="item.id">
                                     <div class="bullet blue"></div>
-                                    <div class="article_item_img"><a href="#"><img :src="$baseImgUrl + item.picture" alt="" @click="handleClick(item.articleId)"></a></div>
+                                    <div class="article_item_img"><a href="#"><img :src="item.picture" alt="" @click="handleClick(item.articleId)"></a></div>
                                     <div class="desc">
                                         <h2><li class="el-icon-date"></li> {{item.createTime}}</h2>
                                         <h3 @click="handleClick(item.articleId)"><a href="#">{{item.articleSummary}}</a></h3>
@@ -56,6 +56,9 @@
                 <div class="m_page">
                     <el-pagination
                         background
+                        @current-change="handleCurrentChange"
+                        :current-page="currentPage"
+                        :page-size="pageSize"
                         layout="prev, pager, next"
                         :total="total">
                     </el-pagination>
@@ -93,7 +96,7 @@ export default {
             monthData: [],
             articleCount: [],
             currentPage: 1,
-            pageSize: 5,
+            pageSize: 10,
             total: 8,
         }
     },
@@ -198,7 +201,35 @@ export default {
                this.articleData = [];
             }
         }));
+        },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+      if (this.queryModel === 2) {
+        //模糊查询
+        ArticleShow(
+          this.form.noticeContent,
+          this.currentPage,
+          this.pageSize
+        ).then((res) => {
+          // TODO
+          this.tableData = res.data;
+          this.total = res.total;
+        });
+      }  else {
+        // 普通查询
+        ArticleShow(this.currentPage, this.pageSize).then((res) => {
+        console.log(res.data,"----");
+        if (res) {
+          this.articleData = res.data;
+          this.total = res.total;
+        } else {
+          this.articleData = [];
+          this.total = 0;
         }
+      });
+      }
+    }
     },
     mounted () {
     /*ECharts图表*/

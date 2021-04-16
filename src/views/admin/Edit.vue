@@ -5,8 +5,7 @@
         class="text-form-inline"
       >
         <el-form-item>
-          <el-select v-model="formSeletor.sort" placeholder="请选择文章分类">
-            <el-option label="所有" value="所有"></el-option>
+          <el-select v-model="articleTable.categoryName" placeholder="请选择文章分类">
             <el-option
               :label="item.categoryName"
               :value="item.categoryId"
@@ -14,8 +13,7 @@
               :key="item.sortId"
             ></el-option>
           </el-select>
-          <el-select v-model="formSeletor.tags" placeholder="请选择文章标签">
-            <el-option label="所有" value="所有"></el-option>
+          <el-select v-model="articleTable.tagsName" placeholder="请选择文章标签">
             <el-option
               :label="item.tagsName"
               :value="item.tagsId"
@@ -27,7 +25,7 @@
         <el-input
           placeholder="请输入文章标题"
           v-model="articleTable.articleTitle"
-          style="width:35%;text-align: left; margin-right: 10px"
+          style="width:55%;text-align: left; margin-right: 10px"
           clearable>
         </el-input>
         <!-- <el-upload
@@ -42,7 +40,7 @@
         </el-upload> -->
         <el-input
           type="textarea"
-          :rows="2"
+          :rows="3"
           placeholder="请输入文章概述"
           style="margin-bottom:22px"
           v-model="articleTable.articleSummary">
@@ -73,7 +71,8 @@
 import {
   ShowCategory,
   publishArticle,
-  // uploadPicture
+  ShowArticleById
+  // deleteImage
 } from '../../network/article'
 import {
   ShowTagsAll,
@@ -85,11 +84,10 @@ export default {
   data () {
       return {
         formSeletor: {
-          sort: '所有',
-          tags: '所有'
+          sort: '',
+          tags: ''
         },
         articleTitle: '',
-        value: '',
         content: '',
         toolbars: {
           bold: true, // 粗体
@@ -136,15 +134,18 @@ export default {
           categoryId: '',
           tagsId: '',
           picture: '',
-          text_content: '',
+          textContent: '',
           articleState: '',
-
-
+          first_picture: '',
+          categoryName: '',
+          tagsName: '',
         },
         html: '',
         fileList: [],
+        articleId: ''
       }
     },
+    
     created() {
       ShowCategory().then((res => {
       console.log("898989",res.data);
@@ -161,7 +162,22 @@ export default {
         } else {
           this.tagsData = [];
         }
-      }))
+      }));
+      
+    },
+    mounted() {
+      this.$eventBusiIcon.$on("eventBusName", (val, index) => {
+        console.log("edit",val);
+        this.articleId = val;
+        ShowArticleById(val).then(res => {
+          console.log(res,"----")
+          this.articleTable = res;
+          this.$set(this, 'content', res.textContent)
+          console.log(this.articleTable)
+        })
+        this.icon = index;
+      });
+    // this.timer = setInterval(this.get, 1000);
     },
     methods: {
     // 将图片上传到服务器，返回地址替换到md中
@@ -171,32 +187,47 @@ export default {
       this.$axios.post('http://localhost:8081/upload/uploadImage', formdata).then(res => {
         if(res) {
           this.$refs.md.$img2Url(pos, res.data.path);
+          console.log(res.data.name)
           this.articleTable.picture = this.articleTable.picture + res.data.name + ",";
+          if(pos == 1){
+            this.articleTable.first_picture = res.data.path;
+          }
+          console.log(this.articleTable.first_picture,"++**99")
+
         }
         console.log(this.articleTable.picture)
       }).catch(err => {
         console.log(err)
       })
     },
-    $imgDel (pos) {
-      delete this.img_file[pos]
+    $imgDel(pos) {
+      console.log(pos[0]);
+      var formdata = new FormData();
+      formdata.append("url", pos[0]);
+      // deleteImage(pos[0])
+      //   .then(response => {
+      //     if (response.success) {
+      //       this.error("删除图片成功");
+      //     } else {
+      //       this.error("删除图片失败:" + response.message);
+      //     }
+      //   })
+      //   .catch(error => {
+      //     this.error("删除图片失败:" + error);
+      //   });
     },
     change (value, render) {
       this.html = render
       this.articleTable.articleContent = render
-      this.articleTable.text_content = value
+      this.articleTable.textContent = value
       // console.log(render)
     },
     publishArticle (articleState) {
       this.articleTable.articleState = articleState;
-      this.articleTable.categoryId = this.formSeletor.sort;
-      this.articleTable.tagsId = this.formSeletor.tags;
+      this.articleTable.categoryId = this.articleTable.categoryName;
+      this.articleTable.tagsId = this.articleTable.tagsName;
       publishArticle(this.articleTable);
-      // this.$axios.post('/blog/publishArticle', this.articleTable).then(response => {
-      //   if (response.data.code !== '200') this.$message.error('添加失败')
-      //   else if (articleState && response.data.code === '200') this.$message.success('博客发布成功!')
-      //   else if (articleState && response.data.code === '200') this.$message.success('博客保存成功!')
-      // })
+      this.$eventBusTag.$emit("eventBusName", "文章管理", "article");
     },
 
     // 提交

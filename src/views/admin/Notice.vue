@@ -133,7 +133,7 @@ export default {
       },
       tableData: [],
       currentPage: 1,
-      pageSize: 5,
+      pageSize: 10,
       total: 0,
       dialogFormVisible: false,
       dialogNoticeVisible: false,
@@ -178,20 +178,7 @@ export default {
           this.tableData = res.data;
           this.total = res.total;
         });
-      } /*  else if (this.queryModel === 1) {
-        // 筛选查询
-        SelectSelector(
-          this.formSeletor.sort,
-          this.formSeletor.pub,
-          this.formSeletor.isreturn,
-          this.currentPage,
-          this.pageSize
-        ).then((res) => {
-          // TODO
-          this.tableData = res;
-          this.total = 6;
-        });
-      }  */ else {
+      }  else {
         // 普通查询
         ShowNotice(this.currentPage, this.pageSize).then((res) => {
         // TODO

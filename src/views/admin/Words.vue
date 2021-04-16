@@ -190,7 +190,7 @@ export default {
         wordsId: ""
       },
       currentPage: 1,
-      pageSize: 5,
+      pageSize: 10,
       formInlineIsreturn: "0",
       total: 8,
       bookSorts: [],

@@ -231,3 +231,20 @@ export function ShowResourceByLike(resourceName,page = 1,rows = 5) {
     }
   })
 }
+
+//查找aboutme
+export function ShowAbout(){
+  return request({
+    method: 'get',
+    url: '/about/showUser'
+  })
+}
+
+//修改aboutme
+export function updateAbout(about){
+  return request({
+    method: 'post',
+    url: '/about/insertAbout',
+    params: about,
+  })
+}

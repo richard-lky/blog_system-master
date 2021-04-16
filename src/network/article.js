@@ -113,17 +113,39 @@ export function publishArticle(Article) {
   })
 } 
 
-//上传文章中的图片
-export function uploadPicture(file) {
+//删除编辑器中的图片
+export function deleteImage(file) {
   console.log("+++",file)
   return request({
-    url: '/upload/uploadImage',
-    method: 'post',
+    url: '/upload/deleteImage',
+    method: 'get',
     // async: false,
     // cache: false,
     // contentType: false,
     // processData: false,
-    data: file,
-    headers: { 'Content-Type': 'multipart/form-data; boundary=OCqxMF6-JxtxoMDHmoG5W5eY9MGRsTBp' }
+    params: {
+      key: file,
+      }
   })
 } 
+
+//增加文章被点击数
+export function addArticleViews(articleId,views) {
+  return request({
+    url: '/article/addArticleViews',
+    method: 'get',
+    params: {
+      articleId: articleId,
+      views: views,
+      }
+  })
+} 
+
+//根据文章的查询次数查询文章
+export function ShowArticleByViews() {
+  return request({
+    url: '/article/showArticleByViews',
+    method: 'get',
+  })
+} 
+

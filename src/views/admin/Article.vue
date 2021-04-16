@@ -54,7 +54,7 @@
               type="success"
               class="publish"
               size="small"
-              @click="dialogNewArticleVisible = true"
+              @click="gotToEdit"
               >写文章</el-button
             >
           </el-form-item>
@@ -102,7 +102,7 @@
             <template slot-scope="scope">
               <el-tag
                 @click="handleClick(scope.row)"
-                type="success"
+                type="primary"
                 disable-transitions
                 class="tag-btn"
                 >编辑</el-tag
@@ -132,9 +132,9 @@
 </template>
 
 <script>
-import {
-  updateBook,
-} from "../../network/book";
+// import {
+//   updateBook,
+// } from "../../network/book";
 import {
   ArticleShow,
   ShowCategory,
@@ -151,37 +151,20 @@ export default {
   components: {},
   data() {
     return {
+      timer: '',
+      value: '',
       collapse: true,
       tagName: "",
       icon: "",
       formInline: {
         // 文章详情模态框
-        id: "",
-        bookId: "",
         articleTitle: "",
-        bookAuthor: "",
-        bookPub: "",
-        bookSort: "",
-        bookRecord: "",
-        bookIntroduce: "",
-        bookImg: require("../../assets/img/avatar.png"),
-        isreturn: 0,
-      },
-      formNewBook: {
-        // 添加文章模态框
-        bookId: "",
-        articleTitle: "",
-        bookAuthor: "",
-        bookPub: "",
-        bookSort: "武侠",
-        bookIntroduce: "",
-        bookImg: "",
-        file: "",
+        articleId: ''
       },
       articleData: [], //文章列表
 
       currentPage: 1,
-      pageSize: 5,
+      pageSize: 10,
       dialogFormVisible: false,
       dialogNewArticleVisible: false,
       formInlineIsreturn: "0",
@@ -259,9 +242,11 @@ export default {
       }
     },
     handleClick(row) {
-      this.dialogFormVisible = true;
       this.formInline = row;
+    this.timer = setInterval(this.get, 500);
+      this.$eventBusTag.$emit("eventBusName", "发表文章", "edit");
       // this.formInlineIsreturn = row.isreturn
+      this.$eventBusiIcon.$emit("eventBusName", this.formInline.articleId, "edit");
     },
     onSubmitFuzzy() {
       //模糊查询
@@ -327,17 +312,28 @@ export default {
           });
         });
     },
-    addBook() {
-      
+    gotToEdit() {
+      // this.$router.push("edit/")
+      // addTag(val, two, path) {
+      this.$eventBusTag.$emit("eventBusName", "发表文章", "edit");
+      this.$eventBusiIcon.$emit("eventBusName", "发表文章", "two", "edit");
+    // },
     },
-    updateBookInfo() {
-      //修改图书信息
-      this.dialogFormVisible = false;
-      this.formInline.bookRecord = this.$moment(
-        new Date(this.formInline.bookRecord).getTime()
-      ).format("YYYY-MM-DD");
-      updateBook(this.formInline);
-    },
+    // updateBookInfo() {
+    //   //修改图书信息
+    //   this.dialogFormVisible = false;
+    //   this.formInline.bookRecord = this.$moment(
+    //     new Date(this.formInline.bookRecord).getTime()
+    //   ).format("YYYY-MM-DD");
+    //   updateBook(this.formInline);
+    // },
+    get() {
+        this.value ++;
+        console.log(this.value)
+        this.$eventBusiIcon.$emit("eventBusName", this.formInline.articleId, "edit");
+        clearInterval(this.timer)
+      },
+
   },
   created() {
     //从这里开始
@@ -368,7 +364,6 @@ export default {
         this.tagsData = [];
       }
     }))
-
   },
   mounted() {
     this.$eventBus.$on("eventBusName", (val) => {
@@ -378,7 +373,7 @@ export default {
       this.tagName = val;
     });
     this.$eventBusiIcon.$on("eventBusName", (val, index) => {
-      console.log(val);
+      console.log("article",val);
       this.icon = index;
     });
   },

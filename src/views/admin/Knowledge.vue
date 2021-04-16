@@ -237,7 +237,7 @@ export default {
       },
       tableData: [], //资源列表
       currentPage: 1,
-      pageSize: 5,
+      pageSize: 10,
       dialogFormVisible: false,
       dialogNewResourceVisible: false,
       total: 0,
